@@ -2,6 +2,7 @@ package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Transfer;
 
+import javax.validation.Valid;
 import java.util.List;
 
 public interface TransferDao {
@@ -13,7 +14,7 @@ public interface TransferDao {
     //TODO: Throws exception for insufficient funds
     Transfer sendTransfer(Transfer transfer);
 
-    void insertSuccessfulTransfer();
+    Transfer insertSuccessfulTransfer();
 
-    void insertFailedTransfer();
+    Transfer insertFailedTransfer();
 }

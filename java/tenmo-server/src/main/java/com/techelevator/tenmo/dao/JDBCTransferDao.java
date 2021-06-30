@@ -2,12 +2,12 @@
 
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import javax.sql.DataSource;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +17,10 @@ public class JDBCTransferDao implements TransferDao {
 
     public JDBCTransferDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
+    }
+
+    public JDBCTransferDao() {
+
     }
 
     @Override
@@ -69,21 +73,23 @@ public class JDBCTransferDao implements TransferDao {
     }
 
     @Override
-    public void insertSuccessfulTransfer() {
+    public Transfer insertSuccessfulTransfer() {
         Transfer transfer = new Transfer();
         String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
                      "VALUES (2, 2, ?, ?, ?);";
         jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(),
                             transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
+        return transfer;
     }
 
     @Override
-    public void insertFailedTransfer() {
+    public Transfer insertFailedTransfer() {
         Transfer transfer = new Transfer();
         String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
                 "VALUES (2, 3, ?, ?, 0);";
         jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(),
                 transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
+        return transfer;
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {
