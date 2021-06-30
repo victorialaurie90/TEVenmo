@@ -10,6 +10,8 @@ public interface AccountDao {
 
     List<Account> listAllUsers();
 
-    void updateBalance(int userId, BigDecimal balance);
+    void subtractFromBalance(int userId, BigDecimal amountToSubtract);
+
+    void addToBalance(int userId, BigDecimal amountToAdd);
 
 }

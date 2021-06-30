@@ -45,11 +45,21 @@ public class JDBCAccountDao implements AccountDao{
         return account;
     }
 
+    //TODO: Insufficient funds exception, might need try/catch, make sure to test
     @Override
-    public void updateBalance(int userId, BigDecimal balance) {
+    public void subtractFromBalance(int userId, BigDecimal amountToSubtract) {
         Account account = new Account();
+        BigDecimal newBalance = account.getBalance().subtract(amountToSubtract);
         String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?;";
-        jdbcTemplate.update(sql, account.getUserId(), account.getBalance());
+        jdbcTemplate.update(sql, userId, newBalance);
+    }
+
+    @Override
+    public void addToBalance(int userId, BigDecimal amountToAdd) {
+        Account account = new Account();
+        BigDecimal newBalance = account.getBalance().add(amountToAdd);
+        String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?;";
+        jdbcTemplate.update(sql, userId, newBalance);
     }
 
     private Account mapRowToAccount(SqlRowSet rowSet) {

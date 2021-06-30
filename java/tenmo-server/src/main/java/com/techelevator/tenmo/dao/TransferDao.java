@@ -10,9 +10,10 @@ public interface TransferDao {
 
     Transfer getTransferById(int transferId);
 
-    //Throws exception for insufficient funds
+    //TODO: Throws exception for insufficient funds
     Transfer sendTransfer(Transfer transfer);
 
-    Transfer insertTransfer(Transfer transfer);
+    void insertSuccessfulTransfer();
 
+    void insertFailedTransfer();
 }

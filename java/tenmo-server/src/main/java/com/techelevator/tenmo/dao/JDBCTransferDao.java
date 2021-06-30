@@ -1,3 +1,5 @@
+//TODO: Exceptions for userId and transferId not found -> in Controller
+
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Account;
@@ -15,8 +17,6 @@ public class JDBCTransferDao implements TransferDao {
 
     public JDBCTransferDao(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
-
-
     }
 
     @Override
@@ -36,7 +36,31 @@ public class JDBCTransferDao implements TransferDao {
 
     @Override
     public Transfer getTransferById(int transferId) {
-        return null;
+        Transfer transfer = new Transfer();
+        String sql = "SELECT trans.transfer_id, " +
+
+                        "(SELECT username FROM users " +
+                        "INNER JOIN accounts ON accounts.user_id = users.user_id " +
+                        "INNER JOIN transfers ON accounts.account_id = transfers.account_from " +
+                        "WHERE accounts.account_id = transfers.account_from), " +
+                        "(SELECT username FROM users " +
+                        "INNER JOIN accounts ON accounts.user_id = users.user_id " +
+                        "INNER JOIN transfers ON accounts.account_id = transfers.account_to " +
+                        "WHERE accounts.account_id = transfers.account_to), " +
+
+                        "type.transfer_type_desc, status.transfer_status_desc, trans.amount FROM transfers AS trans " +
+
+                        "INNER JOIN transfer_types as type ON trans.transfer_type_id = type.transfer_type_id " +
+                        "INNER JOIN transfer_statuses as status ON trans.transfer_status_id = status.transfer_status_id " +
+                        "INNER JOIN accounts ON trans.account_to = accounts.account_id " +
+                        "INNER JOIN users ON accounts.user_id = users.user_id " +
+                        "WHERE trans.transfer_id = ?;";
+
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, transferId);
+        if (results.next()) {
+            transfer = mapRowToTransfer(results);
+        }
+        return transfer;
     }
 
     @Override
@@ -45,8 +69,21 @@ public class JDBCTransferDao implements TransferDao {
     }
 
     @Override
-    public Transfer insertTransfer(Transfer transfer) {
-        return null;
+    public void insertSuccessfulTransfer() {
+        Transfer transfer = new Transfer();
+        String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                     "VALUES (2, 2, ?, ?, ?);";
+        jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(),
+                            transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
+    }
+
+    @Override
+    public void insertFailedTransfer() {
+        Transfer transfer = new Transfer();
+        String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                "VALUES (2, 3, ?, ?, 0);";
+        jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(),
+                transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {
