@@ -5,6 +5,7 @@ package com.techelevator.tenmo.dao;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import javax.validation.Valid;
@@ -73,8 +74,8 @@ public class JDBCTransferDao implements TransferDao {
     }
 
     @Override
-    public Transfer insertSuccessfulTransfer() {
-        Transfer transfer = new Transfer();
+    public Transfer insertSuccessfulTransfer(Transfer transfer) {
+        //Transfer transfer = new Transfer(); -> Don't think we need this?
         String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
                      "VALUES (2, 2, ?, ?, ?);";
         jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(),
@@ -83,8 +84,8 @@ public class JDBCTransferDao implements TransferDao {
     }
 
     @Override
-    public Transfer insertFailedTransfer() {
-        Transfer transfer = new Transfer();
+    public Transfer insertFailedTransfer(Transfer transfer) {
+        //Transfer transfer = new Transfer(); -> Don't think we need this?
         String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
                 "VALUES (2, 3, ?, ?, 0);";
         jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(),

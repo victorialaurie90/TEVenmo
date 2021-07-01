@@ -22,6 +22,10 @@ public class JDBCAccountDao implements AccountDao{
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    public JDBCAccountDao() {
+
+    }
+
     @Override
     public Account getBalance(int userId) {
         Account account = new Account();
