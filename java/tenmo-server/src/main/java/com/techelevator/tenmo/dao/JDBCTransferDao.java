@@ -2,27 +2,25 @@
 
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
-import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JDBCTransferDao implements TransferDao {
+@Component
+public class JdbcTransferDao implements TransferDao {
 
     private JdbcTemplate jdbcTemplate;
 
-    public JDBCTransferDao(DataSource dataSource) {
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public JDBCTransferDao() {
-
-    }
 
     @Override
     public List<Transfer> getAllTransfers(int userId) {
@@ -68,29 +66,24 @@ public class JDBCTransferDao implements TransferDao {
         return transfer;
     }
 
+    //TODO Handle success and failure messages
     @Override
-    public Transfer sendTransfer(Transfer transfer) {
-        return null;
-    }
+    public Transfer insertTransfer(Transfer transfer, BigDecimal requestAmount) {
+        Account account = new Account();
+        if (requestAmount.compareTo(account.getBalance()) >= 0) {
+            String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                    "VALUES (2, 2, ?, ?, ?);";
+            jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(),
+                    transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
+            return transfer;
 
-    @Override
-    public Transfer insertSuccessfulTransfer(Transfer transfer) {
-        //Transfer transfer = new Transfer(); -> Don't think we need this?
-        String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                     "VALUES (2, 2, ?, ?, ?);";
-        jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(),
-                            transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
-        return transfer;
-    }
-
-    @Override
-    public Transfer insertFailedTransfer(Transfer transfer) {
-        //Transfer transfer = new Transfer(); -> Don't think we need this?
-        String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                "VALUES (2, 3, ?, ?, 0);";
-        jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(),
-                transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
-        return transfer;
+        }else{
+            String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                    "VALUES (2, 3, ?, ?, 0);";
+            jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(),
+                    transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
+        }
+            return transfer;
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {
@@ -104,3 +97,4 @@ public class JDBCTransferDao implements TransferDao {
         return transfer;
     }
 }
+

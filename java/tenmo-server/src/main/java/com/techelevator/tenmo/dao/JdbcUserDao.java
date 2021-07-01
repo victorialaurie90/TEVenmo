@@ -22,9 +22,6 @@ public class JdbcUserDao implements UserDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public JdbcUserDao() {
-
-    }
 
     @Override
     public int findIdByUsername(String username) {

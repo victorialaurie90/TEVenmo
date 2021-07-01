@@ -2,6 +2,7 @@ package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Transfer;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface TransferDao {
@@ -10,10 +11,6 @@ public interface TransferDao {
 
     Transfer getTransferById(int transferId);
 
-    //TODO: Throws exception for insufficient funds
-    Transfer sendTransfer(Transfer transfer);
+    Transfer insertTransfer(Transfer transfer, BigDecimal requestAmount);
 
-    Transfer insertSuccessfulTransfer(Transfer transfer);
-
-    Transfer insertFailedTransfer(Transfer transfer);
 }

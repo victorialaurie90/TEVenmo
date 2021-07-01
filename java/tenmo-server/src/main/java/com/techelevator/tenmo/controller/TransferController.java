@@ -1,15 +1,14 @@
 package com.techelevator.tenmo.controller;
 
-import com.techelevator.tenmo.dao.JDBCTransferDao;
 import com.techelevator.tenmo.dao.TransferDao;
+import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.Transfer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.instrument.classloading.jboss.JBossLoadTimeWeaver;
+import com.techelevator.tenmo.model.User;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -17,36 +16,41 @@ import java.util.List;
 public class TransferController {
 
     private TransferDao transferDao;
+    private UserDao userDao;
 
-    public TransferController(TransferDao transferDao){
-        this.transferDao = new JDBCTransferDao();
+    public TransferController(TransferDao transferDao, UserDao userDao){
+        this.transferDao = transferDao;
+        this.userDao = userDao;
     }
 
-    //TODO FIGURE OUT THE PATHING!?
-    
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public List<Transfer> getAllTransfers(@Valid @PathVariable int id) {
+    @RequestMapping(path = "/account/{id}/transfers", method = RequestMethod.GET)
+    public List<Transfer> getAllTransfers(@PathVariable int id) {
         List<Transfer> transfersList = transferDao.getAllTransfers(id);
         return transfersList;
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @RequestMapping(path = "/account/transfers/{id}", method = RequestMethod.GET)
     public Transfer getTransferById(@Valid @PathVariable int id) {
         Transfer transfer = transferDao.getTransferById(id);
         return transfer;
     }
 
+    //In case we need to go back to using principal
 
-    //TODO sendTransfer??
+    /*    @RequestMapping(value = "/account/transfers", method = RequestMethod.GET)
+    public List<Transfer> getAllTransfers(Principal principal) {
+        int userId = userDao.findIdByUsername(principal.getName());
+        List<Transfer> transfersList = transferDao.getAllTransfers(userId);
+        return transfersList;
+    }*/
 
-    @RequestMapping(value = "", method = RequestMethod.POST)
-    public Transfer insertSuccessfulTransfer(@RequestBody Transfer newTransfer) {
+
+    /*
+       //Don't think we need this in controller, as no pathway should be needed?
+    @RequestMapping(value = "/transfers", method = RequestMethod.POST)
+    public Transfer insertTransfer(@RequestBody Transfer newTransfer) {
         return transferDao.insertSuccessfulTransfer(newTransfer);
-    }
+    }*/
 
-    @RequestMapping(value = "", method = RequestMethod.POST)
-    public Transfer insertFailedTransfer(@RequestBody Transfer newTransfer) {
-        return transferDao.insertFailedTransfer(newTransfer);
-    }
 
 }

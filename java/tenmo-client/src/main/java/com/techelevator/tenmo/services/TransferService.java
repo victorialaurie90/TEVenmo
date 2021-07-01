@@ -26,25 +26,20 @@ public class TransferService {
 
 public List<Transfer> getAllTransfers(int userId) {
         List<Transfer> transfer = new ArrayList<>();
-        transfer = restTemplate.exchange(BASE_URL + "/accounts/" + userId + "/transfer", HttpMethod.GET, makeAuthEntity(), List.class).getBody();
+        transfer = restTemplate.exchange(BASE_URL + "/accounts/"+ userId + "/transfers", HttpMethod.GET, makeAuthEntity(), List.class).getBody();
     return transfer;
 }
 
 public Transfer getTransferById (int transferId) {
         Transfer transfer = new Transfer();
-        transfer = restTemplate.exchange(BASE_URL + "/accounts/transfer/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+        transfer = restTemplate.exchange(BASE_URL + "/transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
         return transfer;
     }
 
     //TODO: WTF do we do with sendTransfer??
 
-    public Transfer insertSuccessfulTransfer(Transfer transfer) {
-        transfer = restTemplate.postForObject(BASE_URL + "/accounts/transfer/" + transfer.getTransferId(), makeAuthEntity(), Transfer.class);
-        return transfer;
-    }
-
-    public Transfer insertFailedTransfer(Transfer transfer) {
-        transfer = restTemplate.postForObject(BASE_URL + "/accounts/transfer/" + transfer.getTransferId(), makeAuthEntity(), Transfer.class);
+    public Transfer insertTransfer(Transfer transfer) {
+        transfer = restTemplate.postForObject(BASE_URL + "/transfers/" + transfer.getTransferId(), makeAuthEntity(), Transfer.class);
         return transfer;
     }
 

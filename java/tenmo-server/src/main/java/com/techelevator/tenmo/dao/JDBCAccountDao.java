@@ -1,40 +1,31 @@
 package com.techelevator.tenmo.dao;
-
 import com.techelevator.tenmo.model.Account;
-import com.techelevator.tenmo.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-
-import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class JDBCAccountDao implements AccountDao{
+public class JdbcAccountDao implements AccountDao{
 
     private JdbcTemplate jdbcTemplate;
-    //Ask Rich about this...
-    // private UserDao userDao;
 
-    public JDBCAccountDao(DataSource dataSource){
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    public JdbcAccountDao(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public JDBCAccountDao() {
-
-    }
 
     @Override
-    public Account getBalance(int userId) {
-        Account account = new Account();
+    public BigDecimal getBalance(int userId) {
+        BigDecimal balance = new BigDecimal(0.00);
         String sql = "SELECT balance FROM accounts WHERE user_id = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
         if (results.next()){
-            account = mapRowToAccount(results);
+            balance = mapRowToAccount(results).getBalance();
         }
-        return account;
+        return balance;
     }
 
     @Override
