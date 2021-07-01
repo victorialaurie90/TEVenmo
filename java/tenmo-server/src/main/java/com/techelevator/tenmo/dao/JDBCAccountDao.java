@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //Life is pain
+// -_-
 @Component
 public
 class JdbcAccountDao implements AccountDao {
