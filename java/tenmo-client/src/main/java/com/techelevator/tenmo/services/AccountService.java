@@ -9,40 +9,51 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AccountService {
 
-    private String BASE_URL;
+    private String API_BASE_URL;
     private RestTemplate restTemplate = new RestTemplate();
     public static String AUTH_TOKEN = "";
     private AuthenticatedUser currentUser;
+    private Account account;
 
     public AccountService(String url, AuthenticatedUser currentUser) {
-        this.BASE_URL = "http://localhost:8080";
+        API_BASE_URL = "http://localhost:8080";
         this.currentUser = currentUser;
     }
 
     //TODO: RestClientResponse Exceptions on all -> wrap in try/catch
 
-    public BigDecimal getBalance(int userId) {
-        BigDecimal balance = new BigDecimal(0.00);
-        balance = restTemplate.exchange(BASE_URL + "/accounts/" + userId + "/balance", HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody();
+    public BigDecimal getBalance(AuthenticatedUser currentUser) {
+        BigDecimal balance;
+        balance = restTemplate.exchange(API_BASE_URL + "/account/" + currentUser.getUser().getId() + "/balance", HttpMethod.GET, makeAuthEntity(currentUser), BigDecimal.class).getBody();
+        System.out.println("Your current balance is " + balance + ".");
         return balance;
     }
 
-    public List<User> listAllUsers() {
-        List<User> users = new ArrayList<>();
-        users = restTemplate.exchange(BASE_URL + "/users", HttpMethod.GET, makeAuthEntity(), List.class).getBody();
+    public User[] listAllUsers(AuthenticatedUser currentUser) {
+        User[] users;
+        users = restTemplate.exchange(API_BASE_URL + "/users", HttpMethod.GET, makeAuthEntity(currentUser), User[].class).getBody();
+        System.out.println("-------------------------------------------");
+        System.out.println("Users");
+        System.out.println("ID             Name");
+        System.out.println("-------------------------------------------");
+
+        for (User i : users) {
+            //TODO: Figure out how to not show current user
+            if (i.getId() != currentUser.getUser().getId()) {
+                System.out.println(i.getId() + "          " + i.getUsername());
+            }
+        }
         return users;
     }
 
     //TODO: What to do with subtractFromBalance and addToBalance
 
-    private HttpEntity makeAuthEntity() {
+    private HttpEntity makeAuthEntity(AuthenticatedUser currentUser) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(AUTH_TOKEN);
+        headers.setBearerAuth(currentUser.getToken());
         HttpEntity entity = new HttpEntity<>(headers);
         return entity;
     }

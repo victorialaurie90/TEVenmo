@@ -1,14 +1,16 @@
 package com.techelevator.tenmo.dao;
+
 import com.techelevator.tenmo.model.Account;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class JdbcAccountDao implements AccountDao{
+public class JdbcAccountDao implements AccountDao {
 
     private JdbcTemplate jdbcTemplate;
 
@@ -19,12 +21,8 @@ public class JdbcAccountDao implements AccountDao{
 
     @Override
     public BigDecimal getBalance(int userId) {
-        BigDecimal balance = new BigDecimal(0.00);
         String sql = "SELECT balance FROM accounts WHERE user_id = ?;";
-        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
-        if (results.next()){
-            balance = mapRowToAccount(results).getBalance();
-        }
+       BigDecimal balance = jdbcTemplate.queryForObject(sql, BigDecimal.class, userId);
         return balance;
     }
 
@@ -34,9 +32,9 @@ public class JdbcAccountDao implements AccountDao{
         List<Account> account = new ArrayList<>();
         String sql = "SELECT user_id, username FROM users;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-            if (results.next()){
-                account.add(mapRowToAccount(results));
-            }
+        if (results.next()) {
+            account.add(mapRowToAccount(results));
+        }
         return account;
     }
 

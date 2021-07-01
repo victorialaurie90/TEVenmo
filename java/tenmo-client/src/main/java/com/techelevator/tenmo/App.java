@@ -2,13 +2,15 @@ package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
+import com.techelevator.tenmo.services.TransferService;
 import com.techelevator.view.ConsoleService;
 
 public class App {
 
-private static final String API_BASE_URL = "http://localhost:8080/";
+private static final String API_BASE_URL = "http://localhost:8080";
     
     private static final String MENU_OPTION_EXIT = "Exit";
     private static final String LOGIN_MENU_OPTION_REGISTER = "Register";
@@ -68,8 +70,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewCurrentBalance() {
-		// TODO Auto-generated method stub
-		
+		AccountService accountService = new AccountService(API_BASE_URL, currentUser);
+		accountService.getBalance(currentUser);
 	}
 
 	private void viewTransferHistory() {
@@ -83,8 +85,10 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void sendBucks() {
-		// TODO Auto-generated method stub
-		
+		AccountService accountService = new AccountService(API_BASE_URL, currentUser);
+		accountService.listAllUsers(currentUser);
+
+		//TODO: Need to finish fleshing this out
 	}
 
 	private void requestBucks() {
