@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+//Life is pain
 @Component
 public
 class JdbcAccountDao implements AccountDao {
