@@ -7,6 +7,7 @@ import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
 import com.techelevator.tenmo.services.TransferService;
 import com.techelevator.view.ConsoleService;
+import org.apiguardian.api.API;
 
 public class App {
 
@@ -75,6 +76,8 @@ private static final String API_BASE_URL = "http://localhost:8080";
 	}
 
 	private void viewTransferHistory() {
+    	TransferService transferService = new TransferService(API_BASE_URL, currentUser);
+    	transferService.getAllTransfers(currentUser);
 		// TODO Auto-generated method stub
 		
 	}

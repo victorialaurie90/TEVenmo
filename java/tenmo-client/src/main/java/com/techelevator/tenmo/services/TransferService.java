@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.services;
 
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.http.HttpEntity;
@@ -16,34 +17,47 @@ public class TransferService {
     private RestTemplate restTemplate = new RestTemplate();
     public static String AUTH_TOKEN = "";
     private AuthenticatedUser currentUser;
+    private Account currentAccount;
 
     public TransferService(String url, AuthenticatedUser currentUser) {
         this.API_BASE_URL = "http://localhost:8080";
         this.currentUser = currentUser;
+        this.currentAccount = currentAccount;
     }
 
-public List<Transfer> getAllTransfers(int userId) {
+public List<Transfer> getAllTransfers(AuthenticatedUser currentUser) {
         List<Transfer> transfer = new ArrayList<>();
-        transfer = restTemplate.exchange(API_BASE_URL + "/accounts/"+ userId + "/transfers", HttpMethod.GET, makeAuthEntity(), List.class).getBody();
-    return transfer;
+        transfer = restTemplate.exchange(API_BASE_URL + "/transfers", HttpMethod.GET, makeAuthEntity(currentUser), List.class).getBody();
+        System.out.println("-------------------------------------------");
+        System.out.println("Transfers");
+        System.out.println("ID             From/To             Amount");
+        System.out.println("-------------------------------------------");
+        for(Transfer i : transfer){
+            if (i.getAccountFrom() == currentUser.getUser().getId()) {
+               System.out.println(i.getTransferId() + "          To: " + i.getAccountTo() + "            $ " + i.getAmount());
+        } else if (i.getAccountTo() == currentUser.getUser().getId()) {
+                System.out.println(i.getTransferId() + "         From: " + i.getAccountFrom() + "        $ " + i.getAmount());
+            }
+        }
+        return transfer;
 }
 
 public Transfer getTransferById (int transferId) {
         Transfer transfer = new Transfer();
-        transfer = restTemplate.exchange(API_BASE_URL + "/transfers/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+        transfer = restTemplate.exchange(API_BASE_URL + "/transfers/" + transferId, HttpMethod.GET, makeAuthEntity(currentUser), Transfer.class).getBody();
         return transfer;
     }
 
     //TODO: WTF do we do with sendTransfer??
 
     public Transfer insertTransfer(Transfer transfer) {
-        transfer = restTemplate.postForObject(API_BASE_URL + "/transfers/" + transfer.getTransferId(), makeAuthEntity(), Transfer.class);
+        transfer = restTemplate.postForObject(API_BASE_URL + "/transfers/" + transfer.getTransferId(), makeAuthEntity(currentUser), Transfer.class);
         return transfer;
     }
 
-    private HttpEntity makeAuthEntity() {
+    private HttpEntity makeAuthEntity(AuthenticatedUser currentUser) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(AUTH_TOKEN);
+        headers.setBearerAuth(currentUser.getToken());
         HttpEntity entity = new HttpEntity<>(headers);
         return entity;
     }

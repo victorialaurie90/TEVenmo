@@ -8,7 +8,7 @@ public class Transfer {
 
     private int transferTypeId;
 
-    private int transferStatusId;
+    private String transferStatusId;
 
     private int accountFrom;
 

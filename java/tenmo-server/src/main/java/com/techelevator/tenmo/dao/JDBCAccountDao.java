@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class JdbcAccountDao implements AccountDao {
+public
+class JdbcAccountDao implements AccountDao {
 
     private JdbcTemplate jdbcTemplate;
 

@@ -24,8 +24,7 @@ class JdbcTransferDao implements TransferDao {
     @Override
     public List<Transfer> getAllTransfers(int userId) {
         List<Transfer> transfers = new ArrayList<>();
-        String sql = "SELECT trans.transfer_id, type.transfer_type_desc, users.username, trans.amount FROM transfers AS trans " +
-                "INNER JOIN transfer_types as type ON trans.transfer_type_id = type.transfer_type_id " +
+        String sql = "SELECT trans.transfer_id, trans.transfer_type_id, trans.transfer_status_id, trans.account_from, trans.account_to, trans.amount FROM transfers AS trans " +
                 "INNER JOIN accounts ON trans.account_to = accounts.account_id " +
                 "INNER JOIN users ON accounts.user_id = users.user_id " +
                 "WHERE users.user_id = ?;";
