@@ -1,13 +1,8 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 public interface TransferDao {
@@ -20,8 +15,7 @@ public interface TransferDao {
 
     int findAccountIdByAccountTo(int accountTo);
 
-    Transfer insertTransfer(Transfer transfer, BigDecimal requestAmount);
+    Transfer sendTransfer(int userFrom, int userTo, BigDecimal amount);
 
-    public boolean sendTransfer(int accountFrom, int accountTo, BigDecimal amount);
-
+    //Transfer insertTransfer(Transfer transfer, BigDecimal requestAmount);
 }

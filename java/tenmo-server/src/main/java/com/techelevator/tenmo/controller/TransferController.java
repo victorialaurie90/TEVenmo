@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
+import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
 
@@ -29,13 +30,24 @@ public class TransferController {
         return transfer;
     }
 
-    @RequestMapping(path = "/transfers", method = RequestMethod.POST)
+    @RequestMapping(path = "account/transfers", method = RequestMethod.POST)
+    public Transfer sendTransfer(@RequestBody Transfer transfer){
+        int accountFrom = transfer.getAccountFrom();
+        int accountTo = transfer.getAccountTo();
+        BigDecimal amount = transfer.getAmount();
+        //int transferTypeID = transfer.getTransferTypeId();
+        Transfer processedTransfer = transferDao.sendTransfer(accountFrom, accountTo, amount);
+        System.out.println("Transfer successful!");
+        return processedTransfer;
+    }
+
+  /*  @RequestMapping(path = "/transfers", method = RequestMethod.POST)
     public String sendTransfer(@RequestBody Transfer transfer) {
-        Transfer newTransfer = new Transfer(transfer.getTransferId(),transfer.getTransferTypeId(), transfer.getTransferStatusId(),
+        Transfer newTransfer = new Transfer(transfer.getTransferTypeId(), transfer.getTransferStatusId(),
                 transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
         transferDao.sendTransfer(newTransfer.getAccountFrom(), newTransfer.getAccountTo(), newTransfer.getAmount());
-        return "Yay, transfer worked!";
-    }
+        return "Transfer was successful!";
+    }*/
 
     @RequestMapping(path = "/transfers", method = RequestMethod.GET)
     public List<Transfer> getAllTransfers(Principal principal) {
@@ -44,7 +56,7 @@ public class TransferController {
         return transfersList;
     }
 
-    /*@RequestMapping(path = "/transfers", method = RequestMethod.GET)
+    /* @RequestMapping(path = "/transfers", method = RequestMethod.GET)
     public List<Transfer> getAllTransfers(int id) {
         List<Transfer> transfersList = transferDao.getAllTransfers(id);
         return transfersList;

@@ -1,6 +1,5 @@
 package com.techelevator.tenmo.services;
 
-import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.User;
 import org.springframework.http.HttpEntity;
@@ -16,7 +15,6 @@ public class AccountService {
     private RestTemplate restTemplate = new RestTemplate();
     public static String AUTH_TOKEN = "";
     private AuthenticatedUser currentUser;
-    private Account account;
 
     public AccountService(String url, AuthenticatedUser currentUser) {
         API_BASE_URL = "http://localhost:8080";
@@ -49,13 +47,10 @@ public class AccountService {
         return users;
     }
 
-    //TODO: What to do with subtractFromBalance and addToBalance
-
     private HttpEntity makeAuthEntity(AuthenticatedUser currentUser) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(currentUser.getToken());
         HttpEntity entity = new HttpEntity<>(headers);
         return entity;
     }
-
 }

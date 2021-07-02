@@ -5,7 +5,7 @@ public class TransferStatus {
     private int transferStatusId;
     private String transferStatusDesc;
 
-    TransferStatus(int transferStatusId, String transferStatusDesc){
+    TransferStatus(int transferStatusId, String transferStatusDesc) {
         this.transferStatusId = transferStatusId;
         this.transferStatusDesc = transferStatusDesc;
     }

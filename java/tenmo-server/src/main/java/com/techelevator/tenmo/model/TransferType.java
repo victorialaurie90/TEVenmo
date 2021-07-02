@@ -5,9 +5,9 @@ public class TransferType {
     private int transferTypeId;
     private String transferTypeDesc;
 
-    TransferType(int transferTypeId, String transferTypeDesc){
+    TransferType(int transferTypeId, String transferTypeDesc) {
         this.transferTypeId = transferTypeId;
-        this. transferTypeDesc = transferTypeDesc;
+        this.transferTypeDesc = transferTypeDesc;
     }
 
     public int getTransferTypeId() {

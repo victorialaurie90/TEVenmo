@@ -14,14 +14,13 @@ public interface AccountDao {
 
     List<Account> listAllUsers();
 
-    void subtractFromBalance(int userId, BigDecimal amountToSubtract);
+    BigDecimal subtractFromBalance(BigDecimal amount, int userId);
 
-    void addToBalance(int userId, BigDecimal amountToAdd);
+    BigDecimal addToBalance(BigDecimal amount, int userId);
 
     String findUsernameByAccountId(int accountId);
 
     BigDecimal getBalanceByAccountId(int accountId);
 
-
-
+    int getAccountIdByUserId(int userId);
 }

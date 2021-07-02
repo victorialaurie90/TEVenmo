@@ -35,13 +35,13 @@ public class AccountController {
     public List<User> listUsers() {
         List<User> users = userDao.findAll();
         return users;
+    }
 
-        //In case we need to go back to using principal
-        /*@RequestMapping(path = "/balance/{id}", method = RequestMethod.GET)
+    /* In case we need to go back to using Principal
+    @RequestMapping(path = "/balance/{id}", method = RequestMethod.GET)
     public BigDecimal getBalance(Principal principal) {
         int userId = userDao.findIdByUsername(principal.getName());
         BigDecimal balance = accountDao.getBalance(userId);
         return balance;
     }*/
-    }
 }
