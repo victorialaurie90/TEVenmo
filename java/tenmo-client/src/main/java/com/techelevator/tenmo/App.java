@@ -84,19 +84,22 @@ private static final String API_BASE_URL = "http://localhost:8080";
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
-		
+		//optional
 	}
 
 	private void sendBucks() {
 		AccountService accountService = new AccountService(API_BASE_URL, currentUser);
 		accountService.listAllUsers(currentUser);
+		//insert transfer
+		//subtract from sending user account
+		//add to receiving user account
 
 		//TODO: Need to finish fleshing this out
 	}
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
-		
+		//optional
 	}
 	
 	private void exitProgram() {

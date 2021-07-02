@@ -18,4 +18,6 @@ public interface AccountDao {
 
     void addToBalance(int userId, BigDecimal amountToAdd);
 
+    String findUsernameByAccountId(int accountId);
+
 }

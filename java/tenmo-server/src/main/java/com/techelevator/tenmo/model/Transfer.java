@@ -20,15 +20,23 @@ public class Transfer {
     @NotBlank(message = "To Account field cannot be blank.")
     private int accountTo;
 
+    @NotBlank(message = "From Account name cannot be blank.")
+    private String accountFromName;
+
+    @NotBlank(message = "To Account name cannot be blank.")
+    private String accountToName;
+
     @DecimalMin(value = "0.01", message = "Transfer amount must be greater than 0.")
     private BigDecimal amount;
 
-    public Transfer(int transferId, int transferTypeId, int transferStatusId, int accountFrom, int accountTo, BigDecimal amount){
+    public Transfer(int transferId, int transferTypeId, int transferStatusId, int accountFrom, int accountTo, String accountFromName, String accountToName, BigDecimal amount){
         this.transferId = transferId;
         this.transferTypeId = transferTypeId;
         this.transferStatusId = transferStatusId;
         this.accountFrom = accountFrom;
         this.accountFrom = accountTo;
+        this.accountFromName = accountFromName;
+        this.accountToName = accountToName;
         this.amount = amount;
 
     }
@@ -83,5 +91,21 @@ public class Transfer {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public String getAccountFromName() {
+        return accountFromName;
+    }
+
+    public void setAccountFromName(String accountFromName) {
+        this.accountFromName = accountFromName;
+    }
+
+    public String getAccountToName() {
+        return accountToName;
+    }
+
+    public void setAccountToName(String accountToName) {
+        this.accountToName = accountToName;
     }
 }

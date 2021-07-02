@@ -3,25 +3,23 @@ import java.math.BigDecimal;
 
 public class Transfer {
 
-
     private int transferId;
-
     private int transferTypeId;
-
-    private String transferStatusId;
-
+    private int transferStatusId;
     private int accountFrom;
-
     private int accountTo;
-
+    private String accountFromName;
+    private String accountToName;
     private BigDecimal amount;
 
-    public Transfer(int transferId, int transferTypeId, int transferStatusId, int accountFrom, int accountTo, BigDecimal amount){
+    public Transfer(int transferId, int transferTypeId, int transferStatusId, int accountFrom, int accountTo, String accountFromName, String accountToName, BigDecimal amount){
         this.transferId = transferId;
         this.transferTypeId = transferTypeId;
         this.transferStatusId = transferStatusId;
         this.accountFrom = accountFrom;
         this.accountFrom = accountTo;
+        this.accountFromName = accountFromName;
+        this.accountToName = accountToName;
         this.amount = amount;
 
     }
@@ -76,5 +74,21 @@ public class Transfer {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public String getAccountFromName() {
+        return accountFromName;
+    }
+
+    public void setAccountFromName(String accountFromName) {
+        this.accountFromName = accountFromName;
+    }
+
+    public String getAccountToName() {
+        return accountToName;
+    }
+
+    public void setAccountToName(String accountToName) {
+        this.accountToName = accountToName;
     }
 }

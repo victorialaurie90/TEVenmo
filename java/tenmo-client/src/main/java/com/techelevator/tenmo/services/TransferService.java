@@ -25,21 +25,21 @@ public class TransferService {
         this.currentAccount = currentAccount;
     }
 
-public List<Transfer> getAllTransfers(AuthenticatedUser currentUser) {
-        List<Transfer> transfer = new ArrayList<>();
-        transfer = restTemplate.exchange(API_BASE_URL + "/transfers", HttpMethod.GET, makeAuthEntity(currentUser), List.class).getBody();
+public Transfer[] getAllTransfers(AuthenticatedUser currentUser) {
+        Transfer[] transfers;
+        transfers = restTemplate.exchange(API_BASE_URL + "/transfers", HttpMethod.GET, makeAuthEntity(currentUser), Transfer[].class).getBody();
         System.out.println("-------------------------------------------");
         System.out.println("Transfers");
         System.out.println("ID             From/To             Amount");
         System.out.println("-------------------------------------------");
-        for(Transfer i : transfer){
-            if (i.getAccountFrom() == currentUser.getUser().getId()) {
+        for(Transfer i : transfers){
+            if (i.getAccountFromName() == currentUser.getUser().getUsername()) {
                System.out.println(i.getTransferId() + "          To: " + i.getAccountTo() + "            $ " + i.getAmount());
-        } else if (i.getAccountTo() == currentUser.getUser().getId()) {
+        } else if (i.getAccountToName() == currentUser.getUser().getUsername()) {
                 System.out.println(i.getTransferId() + "         From: " + i.getAccountFrom() + "        $ " + i.getAmount());
             }
         }
-        return transfer;
+        return transfers;
 }
 
 public Transfer getTransferById (int transferId) {

@@ -17,6 +17,7 @@ public
 class JdbcTransferDao implements TransferDao {
 
     private JdbcTemplate jdbcTemplate;
+    private AccountDao acccountDao;
 
     public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -26,7 +27,7 @@ class JdbcTransferDao implements TransferDao {
     @Override
     public List<Transfer> getAllTransfers(int userId) {
         List<Transfer> transfers = new ArrayList<>();
-        String sql = "SELECT trans.transfer_id, trans.transfer_type_id, trans.transfer_status_id, trans.account_from, trans.account_to, trans.amount FROM transfers AS trans " +
+        String sql = "SELECT trans.transfer_id, trans.transfer_type_id, trans.transfer_status_id, trans.account_from, trans.account_to, users.username, users.username, trans.amount FROM transfers AS trans " +
                 "INNER JOIN accounts ON trans.account_to = accounts.account_id " +
                 "INNER JOIN users ON accounts.user_id = users.user_id " +
                 "WHERE users.user_id = ?;";
@@ -93,6 +94,8 @@ class JdbcTransferDao implements TransferDao {
         transfer.setTransferStatusId(rowSet.getInt("transfer_status_id"));
         transfer.setAccountFrom(rowSet.getInt("account_from"));
         transfer.setAccountTo(rowSet.getInt("account_to"));
+        transfer.setAccountFromName(acccountDao.findUsernameByAccountId(rowSet.getInt("account_from")));
+        transfer.setAccountToName(acccountDao.findUsernameByAccountId(rowSet.getInt("account_to")));
         transfer.setAmount(rowSet.getBigDecimal("amount"));
         return transfer;
     }

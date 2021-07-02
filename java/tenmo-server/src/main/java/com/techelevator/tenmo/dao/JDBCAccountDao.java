@@ -58,6 +58,19 @@ class JdbcAccountDao implements AccountDao {
         jdbcTemplate.update(sql, userId, newBalance);
     }
 
+    @Override
+    public String findUsernameByAccountId(int accountId) {
+        String username = "";
+        String sql = "SELECT username FROM users " +
+                    "INNER JOIN accounts ON users.user_id = accounts.user_id " +
+                    "WHERE accounts.account_id = ?";
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, accountId);
+        if (result.next()) {
+            username = result.getString("username");
+        }
+        return username;
+    }
+
     private Account mapRowToAccount(SqlRowSet rowSet) {
         Account account = new Account();
         account.setAccountId(rowSet.getInt("account_id"));
