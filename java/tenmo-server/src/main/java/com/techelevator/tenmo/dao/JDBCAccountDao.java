@@ -30,6 +30,20 @@ class JdbcAccountDao implements AccountDao {
     }
 
     @Override
+    public BigDecimal getBalanceByAccountId(int accountId) {
+        System.out.println("Account id: " + accountId);
+        String sql = "SELECT balance FROM accounts WHERE account_id = ?;";
+        BigDecimal balance = jdbcTemplate.queryForObject(sql, BigDecimal.class, accountId);
+        System.out.println("Did this run? Yes?");
+        if (balance != null) {
+            return balance;
+        } else {
+            return null;
+        }
+    }
+
+
+        @Override
     //TODO Remove logged-in user from list
     public List<Account> listAllUsers() {
         List<Account> account = new ArrayList<>();

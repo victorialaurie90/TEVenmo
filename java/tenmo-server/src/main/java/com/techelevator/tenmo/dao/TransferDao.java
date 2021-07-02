@@ -16,6 +16,12 @@ public interface TransferDao {
 
     Transfer getTransferById(int transferId);
 
+    int findAccountIdByAccountFrom(int accountFrom);
+
+    int findAccountIdByAccountTo(int accountTo);
+
     Transfer insertTransfer(Transfer transfer, BigDecimal requestAmount);
+
+    public boolean sendTransfer(int accountFrom, int accountTo, BigDecimal amount);
 
 }

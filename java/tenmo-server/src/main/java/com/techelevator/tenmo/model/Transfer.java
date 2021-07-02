@@ -20,30 +20,31 @@ public class Transfer {
     @NotBlank(message = "To Account field cannot be blank.")
     private int accountTo;
 
-    @NotBlank(message = "From Account name cannot be blank.")
-    private String accountFromName;
+    //@NotBlank(message = "From Account name cannot be blank.")
+    //private String accountFromName;
 
-    @NotBlank(message = "To Account name cannot be blank.")
-    private String accountToName;
+    //@NotBlank(message = "To Account name cannot be blank.")
+    //private String accountToName;
 
     @DecimalMin(value = "0.01", message = "Transfer amount must be greater than 0.")
     private BigDecimal amount;
 
-    public Transfer(int transferId, int transferTypeId, int transferStatusId, int accountFrom, int accountTo, String accountFromName, String accountToName, BigDecimal amount){
+    //String accountFromName, String accountToName in constructor?
+    public Transfer(int transferId, int transferTypeId, int transferStatusId, int accountFrom, int accountTo, BigDecimal amount){
         this.transferId = transferId;
         this.transferTypeId = transferTypeId;
         this.transferStatusId = transferStatusId;
         this.accountFrom = accountFrom;
-        this.accountFrom = accountTo;
-        this.accountFromName = accountFromName;
-        this.accountToName = accountToName;
+        this.accountTo = accountTo;
+        //this.accountFromName = accountFromName;
+        //this.accountToName = accountToName;
         this.amount = amount;
-
     }
 
     public Transfer() {
 
     }
+
 
     public int getTransferId() {
         return transferId;
@@ -93,7 +94,7 @@ public class Transfer {
         this.amount = amount;
     }
 
-    public String getAccountFromName() {
+    /*public String getAccountFromName() {
         return accountFromName;
     }
 
@@ -107,5 +108,5 @@ public class Transfer {
 
     public void setAccountToName(String accountToName) {
         this.accountToName = accountToName;
-    }
+    }*/
 }

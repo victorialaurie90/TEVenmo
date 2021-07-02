@@ -17,7 +17,7 @@ public class Transfer {
         this.transferTypeId = transferTypeId;
         this.transferStatusId = transferStatusId;
         this.accountFrom = accountFrom;
-        this.accountFrom = accountTo;
+        this.accountTo = accountTo;
         this.accountFromName = accountFromName;
         this.accountToName = accountToName;
         this.amount = amount;

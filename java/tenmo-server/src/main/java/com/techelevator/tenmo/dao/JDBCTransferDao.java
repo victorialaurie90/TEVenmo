@@ -17,12 +17,30 @@ public
 class JdbcTransferDao implements TransferDao {
 
     private JdbcTemplate jdbcTemplate;
-    private AccountDao acccountDao;
+    private AccountDao accountDao;
 
     public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
+    public boolean sendTransfer(int accountFrom, int accountTo, BigDecimal amount) {
+        if (amount.compareTo(accountDao.getBalance(accountFrom)) == -1 && amount.compareTo(new BigDecimal(0)) == 1) {
+            String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (2, 2, ?, ?, ?);";
+            try {
+                jdbcTemplate.update(sql, accountFrom, accountTo, amount);
+                accountDao.subtractFromBalance(accountFrom, amount);
+                accountDao.addToBalance(accountTo, amount);
+            } catch (Exception e) {
+                System.out.println("Message " +e.getMessage() + " and also " + e.getCause());
+                return false;
+            }
+            return true;
+        } else {
+            System.out.println("You don't have enough funds to complete the transaction");
+            return false;
+        }
+    }
 
     @Override
     public List<Transfer> getAllTransfers(int userId) {
@@ -36,6 +54,32 @@ class JdbcTransferDao implements TransferDao {
             transfers.add(mapRowToTransfer(results));
         }
         return transfers;
+    }
+
+    @Override
+    public int findAccountIdByAccountFrom(int accountFrom) {
+        int accountId = 0;
+        String sql = "SELECT account_id FROM accounts " +
+                "INNER JOIN transfers ON accounts.account_id = transfers.account_from " +
+                "WHERE transfers.account_from = ?";
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, accountFrom);
+        if (result.next()) {
+            accountId = result.getInt("account_id");
+        }
+        return accountId;
+    }
+
+    @Override
+    public int findAccountIdByAccountTo(int accountTo) {
+        int accountId = 0;
+        String sql = "SELECT account_id FROM accounts " +
+                "INNER JOIN transfers ON accounts.account_id = transfers.account_to " +
+                "WHERE transfers.account_to = ?";
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, accountTo);
+        if (result.next()) {
+            accountId = result.getInt("account_id");
+        }
+        return accountId;
     }
 
     @Override
@@ -94,8 +138,8 @@ class JdbcTransferDao implements TransferDao {
         transfer.setTransferStatusId(rowSet.getInt("transfer_status_id"));
         transfer.setAccountFrom(rowSet.getInt("account_from"));
         transfer.setAccountTo(rowSet.getInt("account_to"));
-        transfer.setAccountFromName(acccountDao.findUsernameByAccountId(rowSet.getInt("account_from")));
-        transfer.setAccountToName(acccountDao.findUsernameByAccountId(rowSet.getInt("account_to")));
+        //transfer.setAccountFromName(accountDao.findUsernameByAccountId(rowSet.getInt("account_from")));
+        //transfer.setAccountToName(accountDao.findUsernameByAccountId(rowSet.getInt("account_to")));
         transfer.setAmount(rowSet.getBigDecimal("amount"));
         return transfer;
     }

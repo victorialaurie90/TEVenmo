@@ -20,4 +20,8 @@ public interface AccountDao {
 
     String findUsernameByAccountId(int accountId);
 
+    BigDecimal getBalanceByAccountId(int accountId);
+
+
+
 }

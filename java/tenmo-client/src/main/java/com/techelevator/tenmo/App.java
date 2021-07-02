@@ -1,6 +1,7 @@
 package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
@@ -28,6 +29,7 @@ private static final String API_BASE_URL = "http://localhost:8080";
     private AuthenticatedUser currentUser;
     private ConsoleService console;
     private AuthenticationService authenticationService;
+    private Transfer transfer;
 
     public static void main(String[] args) {
     	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
@@ -90,11 +92,9 @@ private static final String API_BASE_URL = "http://localhost:8080";
 	private void sendBucks() {
 		AccountService accountService = new AccountService(API_BASE_URL, currentUser);
 		accountService.listAllUsers(currentUser);
-		//insert transfer
-		//subtract from sending user account
-		//add to receiving user account
+		TransferService transferService = new TransferService(API_BASE_URL, currentUser);
+		transferService.sendTransfer(transfer);
 
-		//TODO: Need to finish fleshing this out
 	}
 
 	private void requestBucks() {
