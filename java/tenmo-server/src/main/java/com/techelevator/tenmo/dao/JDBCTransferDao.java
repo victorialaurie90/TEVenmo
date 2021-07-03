@@ -1,6 +1,8 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Transfer;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -21,18 +23,8 @@ public class JdbcTransferDao implements TransferDao {
         this.accountDao = accountDao;
     }
 
-/*    @Override
-    public Transfer sendTransfer(int userFrom, int userTo, BigDecimal amount) {
-        int userFromAccount = accountDao.getAccountIdByUserId(userFrom);
-        int userToAccount = accountDao.getAccountIdByUserId(userTo);
-        String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                    "VALUES (2, 2, ?, ?, ?);";
-        Transfer transfer = jdbcTemplate.queryForObject(sql, Transfer.class, userFromAccount, userToAccount, amount);
-        return transfer;
-    }*/
-
 @Override
-   public Transfer sendTransfer(int accountFrom, int accountTo, BigDecimal amount){
+   public String sendTransfer(int accountFrom, int accountTo, BigDecimal amount) {
        if (accountTo == accountFrom) {
            System.out.println("You can't send money to yourself!!!");
        }
@@ -42,19 +34,19 @@ public class JdbcTransferDao implements TransferDao {
            jdbcTemplate.update(sql, accountFrom, accountTo, amount);
            accountDao.addToBalance(amount, accountTo);
            accountDao.subtractFromBalance(amount, accountFrom);
-           System.out.println("Transfer completed!");
+           return "Successful transfer!";
        }
        else{
-           System.out.println("Transfer failed due to insufficient funds");
+           //System.out.println("Transfer failed due to insufficient funds");
        }
-       return null;
+       return "Insufficient funds, transfer failed.";
    }
 
-    //TODO: Do we need another userId for accountTo (i.e. user getting money)?
     @Override
     public List<Transfer> getAllTransfers(int userId) {
         List<Transfer> transfers = new ArrayList<>();
-        String sql = "SELECT transfers.transfer_id, transfers.transfer_type_id, transfers.transfer_status_id, transfers.account_from, transfers.account_to, transfers.amount FROM transfers " +
+        String sql = "SELECT transfers.transfer_id, transfers.transfer_type_id, transfers.transfer_status_id, transfers.account_from, " +
+                "transfers.account_to, transfers.amount FROM transfers " +
                 "INNER JOIN accounts ON transfers.account_to = accounts.account_id OR transfers.account_from = accounts.account_id " +
                 "INNER JOIN users ON accounts.user_id = users.user_id " +
                 "WHERE (transfers.account_from = accounts.account_id OR transfers.account_to = accounts.account_id) " +

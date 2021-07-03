@@ -2,11 +2,11 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.apiguardian.api.API;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Scanner;
 
 public class TransferService {
 
@@ -14,6 +14,7 @@ public class TransferService {
     private RestTemplate restTemplate = new RestTemplate();
     public static String AUTH_TOKEN = "";
     private AuthenticatedUser currentUser;
+    AccountService accountService;
 
     public TransferService(String url, AuthenticatedUser currentUser) {
         this.API_BASE_URL = "http://localhost:8080";
@@ -28,11 +29,13 @@ public class TransferService {
         System.out.println("ID             From/To             Amount");
         System.out.println("-------------------------------------------");
         for (Transfer i : transfers) {
-            if (i.getAccountFromName() == currentUser.getUser().getUsername()) {
+            if (i.getAccountFrom() == (accountService.getAccountByUserId(currentUser.getUser().getId(), currentUser))) {
                 System.out.println(i.getTransferId() + "          To: " + i.getAccountTo() + "            $ " + i.getAmount());
-            } else if (i.getAccountToName() == currentUser.getUser().getUsername()) {
-                System.out.println(i.getTransferId() + "         From: " + i.getAccountFrom() + "        $ " + i.getAmount());
+                //} else if (i.getAccountToName() == currentUser.getUser().getUsername()) {
+                //System.out.println(i.getTransferId() + "          From: " + i.getAccountFrom() + "        $ " + i.getAmount());
+                //}
             }
+
         }
         return transfers;
     }
@@ -44,14 +47,24 @@ public class TransferService {
     }
 
     public Transfer sendTransfer(Transfer transfer, AuthenticatedUser currentUser) {
-        try {
-            Transfer currentTransfer = restTemplate.exchange(API_BASE_URL + "/transfers", HttpMethod.POST, makeTransferEntity(transfer, currentUser), Transfer.class).getBody();
-            System.out.println("Transfer was successful.");
-            return currentTransfer;
-        } catch (Exception e) {
-            System.out.println("This happened: " + e.getMessage() + " and " + e.getCause());
-            return null;
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("-------------------------------------------\r\n" +
+                "Enter ID of user you are sending to (0 to cancel): ");
+        transfer.setAccountTo(Integer.parseInt(scanner.nextLine()));
+        transfer.setAccountFrom(currentUser.getUser().getId());
+        if (transfer.getAccountTo() != 0) {
+            System.out.print("Enter amount: ");
+        } else {
+
+            try {
+                Transfer currentTransfer = restTemplate.exchange(API_BASE_URL + "/transfers", HttpMethod.POST, makeTransferEntity(transfer, currentUser), Transfer.class).getBody();
+                System.out.println("Transfer was successful.");
+                return currentTransfer;
+            } catch (Exception e) {
+                System.out.println("This happened: " + e.getMessage() + " and " + e.getCause());
+            }
         }
+        return null;
     }
 
     private HttpEntity makeAuthEntity(AuthenticatedUser currentUser) {

@@ -23,6 +23,16 @@ public class AccountService {
 
     //TODO: RestClientResponse Exceptions on all -> wrap in try/catch
 
+    public int getAccountByUserId(int userId, AuthenticatedUser currentUser){
+        Integer accountId = 0;
+        try {
+            accountId = restTemplate.exchange(API_BASE_URL + "/account" + userId, HttpMethod.GET, makeAuthEntity(currentUser), Integer.class).getBody();
+        } catch (Exception ex){
+            System.out.println("Something isn't right.... maybe your user ID is invalid?");
+        }
+        return accountId;
+    }
+
     public BigDecimal getBalance(AuthenticatedUser currentUser) {
         BigDecimal balance;
         balance = restTemplate.exchange(API_BASE_URL + "/account/" + currentUser.getUser().getId() + "/balance", HttpMethod.GET, makeAuthEntity(currentUser), BigDecimal.class).getBody();
@@ -46,6 +56,8 @@ public class AccountService {
         }
         return users;
     }
+
+    //public Integer getAccountByUserId(int userId){}
 
     private HttpEntity makeAuthEntity(AuthenticatedUser currentUser) {
         HttpHeaders headers = new HttpHeaders();

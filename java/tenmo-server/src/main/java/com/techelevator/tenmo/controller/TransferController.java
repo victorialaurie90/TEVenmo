@@ -34,11 +34,11 @@ public class TransferController {
     }
 
     @RequestMapping(path = "/transfers", method = RequestMethod.POST)
-    public Transfer sendTransfer(@RequestBody Transfer transfer){
+    public String sendTransfer(@RequestBody Transfer transfer){
         int accountFrom = transfer.getAccountFrom();
         int accountTo = transfer.getAccountTo();
         BigDecimal amount = transfer.getAmount();
-        Transfer processedTransfer = transferDao.sendTransfer(accountFrom, accountTo, amount);
+        String processedTransfer = transferDao.sendTransfer(accountFrom, accountTo, amount);
         System.out.println("Transfer successful!");
         return processedTransfer;
     }

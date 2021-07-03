@@ -15,5 +15,5 @@ public interface TransferDao {
 
     int findAccountIdByAccountTo(int accountTo);
 
-    Transfer sendTransfer(int userFrom, int userTo, BigDecimal amount);
+    String sendTransfer(int userFrom, int userTo, BigDecimal amount);
 }

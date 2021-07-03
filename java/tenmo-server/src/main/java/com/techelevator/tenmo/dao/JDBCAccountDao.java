@@ -42,7 +42,7 @@ public class JdbcAccountDao implements AccountDao {
     @Override
     public int getAccountIdByUserId(int userId) {
         String sql = "SELECT account_id FROM accounts WHERE user_Id = ?;";
-        int accountId = jdbcTemplate.queryForObject(sql, int.class, userId);
+        Integer accountId = jdbcTemplate.queryForObject(sql, Integer.class, userId);
         return accountId;
     }
 
@@ -60,25 +60,26 @@ public class JdbcAccountDao implements AccountDao {
 
     // TODO: Insufficient funds exception, might need try/catch, make sure to test
     @Override
-    public BigDecimal subtractFromBalance(BigDecimal amount, int userId) {
-        String sql = "UPDATE accounts SET balance = balance - ?  WHERE user_id = ? RETURNING balance;";
+    public String subtractFromBalance(BigDecimal amount, int accountId) {
+        String sql = "UPDATE accounts SET balance = balance - ?  WHERE account_id = ?;";
         try {
-            return jdbcTemplate.queryForObject(sql, BigDecimal.class, amount, userId);
-        } catch(ResourceAccessException re){
-            System.out.println("Can not connect to database");
+            jdbcTemplate.update(sql, amount, accountId);
+            return "Balance successfully updated.";
+        } catch (ResourceAccessException re) {
+            return "Can not connect to database";
         }
-        return jdbcTemplate.queryForObject(sql, BigDecimal.class, amount, userId);
     }
 
+
     @Override
-    public BigDecimal addToBalance(BigDecimal amount, int userId) {
-        String sql = "UPDATE accounts SET balance = balance + ?  WHERE user_id = ? RETURNING balance;";
+    public String addToBalance(BigDecimal amount, int accountId) {
+        String sql = "UPDATE accounts SET balance = balance + ?  WHERE account_id = ?;";
         try {
-            return jdbcTemplate.queryForObject(sql, BigDecimal.class, amount, userId);
-        } catch(ResourceAccessException re){
-            System.out.println("Can not connect to database");
+            jdbcTemplate.update(sql, amount, accountId);
+            return "Balance successfully updated.";
+        } catch (ResourceAccessException re) {
+            return "Cannot connect to database.";
         }
-        return jdbcTemplate.queryForObject(sql, BigDecimal.class, amount, userId);
     }
 
     @Override
