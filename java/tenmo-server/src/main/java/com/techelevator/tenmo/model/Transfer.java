@@ -5,33 +5,17 @@ import java.math.BigDecimal;
 
 public class Transfer {
 
-    @NotBlank(message = "Transfer ID cannot be blank.")
     private int transferId;
-
-    @NotBlank(message = "Transfer Type ID cannot be blank.")
     private int transferTypeId;
-
-    @NotBlank(message = "Transfer Status ID cannot be blank.")
     private int transferStatusId;
-
-    @NotBlank(message = "From Account field cannot be blank.")
     private int accountFrom;
-
-    @NotBlank(message = "To Account field cannot be blank.")
     private int accountTo;
-
-    @DecimalMin(value = "0.01", message = "Transfer amount must be greater than 0.")
     private BigDecimal amount;
 
-    @NotBlank(message = "From Account name cannot be blank.")
-    private String accountFromName;
+    /*private String accountFromName;
+    private String accountToName;*/
 
-    @NotBlank(message = "To Account name cannot be blank.")
-    private String accountToName;
-
-    //String accountFromName, String accountToName in constructor?
-
-    public Transfer() {
+/*    public Transfer() {
     }
 
     public Transfer(int transferId, int transferTypeId, int transferStatusId, int accountFrom, int accountTo, BigDecimal amount){
@@ -43,7 +27,6 @@ public class Transfer {
         this.amount = amount;
     }
 
-    // THIS IS NEW!
     public Transfer(int transferTypeId, int transferStatusId, int accountFrom, int accountTo, BigDecimal amount) {
         this.transferTypeId = transferTypeId;
         this.transferStatusId = transferStatusId;
@@ -52,7 +35,7 @@ public class Transfer {
         this.amount = amount;
     }
 
-    // THIS IS NEW!
+*//*
     public Transfer(int transferId, int transferTypeId, int transferStatusId, int accountFrom, int accountTo, BigDecimal amount, String accountFromName, String accountToName){
         this.transferId = transferId;
         this.transferTypeId = transferTypeId;
@@ -63,8 +46,7 @@ public class Transfer {
         this.accountFromName = accountFromName;
         this.accountToName = accountToName;
     }
-
-
+*/
 
     public int getTransferId() {
         return transferId;
@@ -114,11 +96,11 @@ public class Transfer {
         this.amount = amount;
     }
 
-    public String getAccountFromName() {return accountFromName;}
+/*    public String getAccountFromName() {return accountFromName;}
 
     public void setAccountFromName(String accountFromName) {this.accountFromName = accountFromName;}
 
     public String getAccountToName() {return accountToName;}
 
-    public void setAccountToName(String accountToName) {this.accountToName = accountToName;}
+    public void setAccountToName(String accountToName) {this.accountToName = accountToName;}*/
 }

@@ -92,7 +92,7 @@ public class App {
         AccountService accountService = new AccountService(API_BASE_URL, currentUser);
         accountService.listAllUsers(currentUser);
         TransferService transferService = new TransferService(API_BASE_URL, currentUser);
-        transferService.sendTransfer(transfer);
+        transferService.sendTransfer(transfer, currentUser);
 
     }
 

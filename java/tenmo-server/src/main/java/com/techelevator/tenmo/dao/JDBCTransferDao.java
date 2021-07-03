@@ -1,6 +1,5 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -11,44 +10,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public
-class JdbcTransferDao implements TransferDao {
+
+public class JdbcTransferDao implements TransferDao {
 
     private JdbcTemplate jdbcTemplate;
     private AccountDao accountDao;
 
-    public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
+    public JdbcTransferDao(JdbcTemplate jdbcTemplate, AccountDao accountDao) {
         this.jdbcTemplate = jdbcTemplate;
+        this.accountDao = accountDao;
     }
 
-    @Override
+/*    @Override
     public Transfer sendTransfer(int userFrom, int userTo, BigDecimal amount) {
         int userFromAccount = accountDao.getAccountIdByUserId(userFrom);
         int userToAccount = accountDao.getAccountIdByUserId(userTo);
-        if (userTo == userFrom) {
-            System.out.println("You can't send money to yourself. Please select a different user.");
-        }
-        if(amount.compareTo(accountDao.getBalance(userFrom)) == -1 || amount.compareTo(accountDao.getBalance(userFrom)) == 0){
-            String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+        String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
                     "VALUES (2, 2, ?, ?, ?);";
-            jdbcTemplate.update(sql, userFromAccount, userToAccount, amount);
-            accountDao.addToBalance(amount, userTo);
-            accountDao.subtractFromBalance(amount, userFrom);
-            System.out.println("Transfer completed!");
-        }
-        else{
-            System.out.println("Transfer failed due to insufficient funds.");
-        }
-        return null;
-    }
+        Transfer transfer = jdbcTemplate.queryForObject(sql, Transfer.class, userFromAccount, userToAccount, amount);
+        return transfer;
+    }*/
 
+@Override
+   public Transfer sendTransfer(int accountFrom, int accountTo, BigDecimal amount){
+       if (accountTo == accountFrom) {
+           System.out.println("You can't send money to yourself!!!");
+       }
+       if(amount.compareTo(accountDao.getBalanceByAccountId(accountFrom)) == -1){
+           String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount)" +
+                   " Values(2, 2, ?, ?, ?);";
+           jdbcTemplate.update(sql, accountFrom, accountTo, amount);
+           accountDao.addToBalance(amount, accountTo);
+           accountDao.subtractFromBalance(amount, accountFrom);
+           System.out.println("Transfer completed!");
+       }
+       else{
+           System.out.println("Transfer failed due to insufficient funds");
+       }
+       return null;
+   }
+
+    //TODO: Do we need another userId for accountTo (i.e. user getting money)?
     @Override
     public List<Transfer> getAllTransfers(int userId) {
         List<Transfer> transfers = new ArrayList<>();
-        String sql = "SELECT trans.transfer_id, trans.transfer_type_id, trans.transfer_status_id, trans.account_from, trans.account_to, users.username, users.username, trans.amount FROM transfers AS trans " +
-                "INNER JOIN accounts ON trans.account_to = accounts.account_id " +
+        String sql = "SELECT transfers.transfer_id, transfers.transfer_type_id, transfers.transfer_status_id, transfers.account_from, transfers.account_to, transfers.amount FROM transfers " +
+                "INNER JOIN accounts ON transfers.account_to = accounts.account_id OR transfers.account_from = accounts.account_id " +
                 "INNER JOIN users ON accounts.user_id = users.user_id " +
-                "WHERE users.user_id = ?;";
+                "WHERE (transfers.account_from = accounts.account_id OR transfers.account_to = accounts.account_id) " +
+                "AND accounts.user_id = users.user_id " +
+                "AND users.user_id = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
         while (results.next()) {
             transfers.add(mapRowToTransfer(results));
@@ -85,25 +96,7 @@ class JdbcTransferDao implements TransferDao {
     @Override
     public Transfer getTransferById(int transferId) {
         Transfer transfer = new Transfer();
-        String sql = "SELECT trans.transfer_id, " +
-
-                "(SELECT username FROM users " +
-                "INNER JOIN accounts ON accounts.user_id = users.user_id " +
-                "INNER JOIN transfers ON accounts.account_id = transfers.account_from " +
-                "WHERE accounts.account_id = transfers.account_from), " +
-                "(SELECT username FROM users " +
-                "INNER JOIN accounts ON accounts.user_id = users.user_id " +
-                "INNER JOIN transfers ON accounts.account_id = transfers.account_to " +
-                "WHERE accounts.account_id = transfers.account_to), " +
-
-                "type.transfer_type_desc, status.transfer_status_desc, trans.amount FROM transfers AS trans " +
-
-                "INNER JOIN transfer_types as type ON trans.transfer_type_id = type.transfer_type_id " +
-                "INNER JOIN transfer_statuses as status ON trans.transfer_status_id = status.transfer_status_id " +
-                "INNER JOIN accounts ON trans.account_to = accounts.account_id " +
-                "INNER JOIN users ON accounts.user_id = users.user_id " +
-                "WHERE trans.transfer_id = ?;";
-
+        String sql = "SELECT * FROM transfers WHERE transfer_id = ?;";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, transferId);
         while (results.next()) {
             transfer = mapRowToTransfer(results);
@@ -118,29 +111,9 @@ class JdbcTransferDao implements TransferDao {
         transfer.setTransferStatusId(rowSet.getInt("transfer_status_id"));
         transfer.setAccountFrom(rowSet.getInt("account_from"));
         transfer.setAccountTo(rowSet.getInt("account_to"));
-        transfer.setAccountFromName(accountDao.findUsernameByAccountId(rowSet.getInt("account_from")));
-        transfer.setAccountToName(accountDao.findUsernameByAccountId(rowSet.getInt("account_to")));
+/*      transfer.setAccountFromName(accountDao.findUsernameByAccountId(rowSet.getInt("account_from")));
+        transfer.setAccountToName(accountDao.findUsernameByAccountId(rowSet.getInt("account_to")));*/
         transfer.setAmount(rowSet.getBigDecimal("amount"));
         return transfer;
     }
-
-    /* Don't need - this is included in sendTransfer
-    @Override
-    public Transfer insertTransfer(Transfer transfer, BigDecimal requestAmount) {
-        Account account = new Account();
-        if (requestAmount.compareTo(account.getBalance()) >= 0) {
-            String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                    "VALUES (2, 2, ?, ?, ?);";
-            jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(),
-                    transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
-            return transfer;
-
-        } else {
-            String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                    "VALUES (2, 3, ?, ?, 0);";
-            jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(),
-                    transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
-        }
-        return transfer;
-    }*/
 }

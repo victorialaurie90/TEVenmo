@@ -43,21 +43,16 @@ public class TransferService {
         return transfer;
     }
 
-    public String sendTransfer(Transfer transfer) {
+    public Transfer sendTransfer(Transfer transfer, AuthenticatedUser currentUser) {
         try {
-            String message = restTemplate.exchange(API_BASE_URL + "/transfers", HttpMethod.POST, makeTransferEntity(transfer), String.class).getBody();
-            System.out.println(message);
-            return message;
+            Transfer currentTransfer = restTemplate.exchange(API_BASE_URL + "/transfers", HttpMethod.POST, makeTransferEntity(transfer, currentUser), Transfer.class).getBody();
+            System.out.println("Transfer was successful.");
+            return currentTransfer;
         } catch (Exception e) {
             System.out.println("This happened: " + e.getMessage() + " and " + e.getCause());
-            return "Transfer unsuccessful.";
+            return null;
         }
     }
-
-        /*public Transfer insertTransfer(Transfer transfer) {
-        transfer = restTemplate.postForObject(API_BASE_URL + "/transfers/" + transfer.getTransferId(), makeAuthEntity(currentUser), Transfer.class);
-        return transfer;
-    }*/
 
     private HttpEntity makeAuthEntity(AuthenticatedUser currentUser) {
         HttpHeaders headers = new HttpHeaders();
@@ -66,7 +61,7 @@ public class TransferService {
         return entity;
     }
 
-    private HttpEntity<Transfer> makeTransferEntity(Transfer transfer) {
+    private HttpEntity<Transfer> makeTransferEntity(Transfer transfer, AuthenticatedUser currentUser) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(currentUser.getToken());
