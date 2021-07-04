@@ -31,6 +31,8 @@ public class App {
     private AuthenticationService authenticationService;
     private TransferService transferService;
     private static AccountService accountService;
+    private int transferId;
+    private Transfer transfer;
 
     public static void main(String[] args) {
         App app = new App(new ConsoleService(System.in, System.out),
@@ -81,7 +83,9 @@ public class App {
     }
 
     private void viewTransferHistory() {
+
         transferService.getAllTransfers(currentUser, accountService);
+        transferService.getTransferById(currentUser, accountService, transferId);
     }
 
     private void viewPendingRequests() {
@@ -89,10 +93,11 @@ public class App {
     }
 
     private void sendBucks() {
-        AccountService accountService = new AccountService(API_BASE_URL);
+        //AccountService accountService = new AccountService(API_BASE_URL);
         accountService.listAllUsers(currentUser);
-        /*TransferService transferService = new TransferService(API_BASE_URL);
-        transferService.sendTransfer(currentUser);*/
+        //transferService.createTransfer(currentUser, console, accountService);
+        //TransferService transferService = new TransferService(API_BASE_URL, accountService);
+        transferService.sendTransfer(transferService.createTransfer(currentUser, console, accountService), currentUser);
     }
 
     private void requestBucks() {

@@ -24,23 +24,24 @@ public class JdbcTransferDao implements TransferDao {
     }
 
 @Override
-   public String sendTransfer(int accountFrom, int accountTo, BigDecimal amount) {
-       if (accountTo == accountFrom) {
-           System.out.println("You can't send money to yourself!!!");
-       }
-       if(amount.compareTo(accountDao.getBalanceByAccountId(accountFrom)) == -1){
-           String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount)" +
-                   " Values(2, 2, ?, ?, ?);";
-           jdbcTemplate.update(sql, accountFrom, accountTo, amount);
-           accountDao.addToBalance(amount, accountTo);
-           accountDao.subtractFromBalance(amount, accountFrom);
-           return "Successful transfer!";
-       }
-       else{
+   public Transfer sendTransfer(int accountFrom, int accountTo, BigDecimal amount) {
+    if (accountTo == accountFrom) {
+        System.out.println("You can't send money to yourself!!!");
+    }
+    if (amount.compareTo(accountDao.getBalanceByAccountId(accountFrom)) == -1) {
+        String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount)" +
+                " Values(2, 2, ?, ?, ?);";
+        jdbcTemplate.update(sql, accountFrom, accountTo, amount);
+        accountDao.addToBalance(amount, accountTo);
+        accountDao.subtractFromBalance(amount, accountFrom);
+    }
+    return null;
+}
            //System.out.println("Transfer failed due to insufficient funds");
-       }
-       return "Insufficient funds, transfer failed.";
-   }
+
+
+       //return "Insufficient funds, transfer failed.";
+
 
     @Override
     public List<Transfer> getAllTransfers(int userId) {
@@ -94,6 +95,20 @@ public class JdbcTransferDao implements TransferDao {
             transfer = mapRowToTransfer(results);
         }
         return transfer;
+    }
+
+    @Override
+    public String getStatusDescFromStatusId(int transferStatusId) {
+        String sql = "SELECT transfer_status_desc FROM transfer_statuses WHERE transfer_status_id = ?;";
+        String statusTransferDesc = jdbcTemplate.queryForObject(sql, String.class, transferStatusId);
+        return statusTransferDesc;
+    }
+
+    @Override
+    public String getTypeDescFromTypeId(int transferTypeId) {
+        String sql = "SELECT transfer_type_desc FROM transfer_types WHERE transfer_type_id = ?;";
+        String typeTransferDesc = jdbcTemplate.queryForObject(sql, String.class, transferTypeId);
+        return typeTransferDesc;
     }
 
     private Transfer mapRowToTransfer(SqlRowSet rowSet) {

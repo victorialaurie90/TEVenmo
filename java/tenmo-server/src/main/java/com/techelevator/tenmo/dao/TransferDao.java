@@ -15,5 +15,9 @@ public interface TransferDao {
 
     int findAccountIdByAccountTo(int accountTo);
 
-    String sendTransfer(int userFrom, int userTo, BigDecimal amount);
+    Transfer sendTransfer(int userFrom, int userTo, BigDecimal amount);
+
+    String getStatusDescFromStatusId(int transferStatusId);
+
+    String getTypeDescFromTypeId(int transferTypeId);
 }

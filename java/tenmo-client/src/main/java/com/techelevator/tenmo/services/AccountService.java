@@ -53,9 +53,19 @@ public class AccountService {
         try {
             accountId = restTemplate.exchange(API_BASE_URL + "/account/" + userId, HttpMethod.GET, makeAuthEntity(currentUser), Integer.class).getBody();
         } catch (Exception ex){
-            System.out.println("Something isn't right.... maybe your user ID is invalid?");
+            System.out.println("Something isn't right.... maybe the user ID is invalid?");
         }
         return accountId;
+    }
+
+    public String getUsernameByAccountId(int accountId, AuthenticatedUser currentUser){
+        String username = "";
+        try {
+            username = restTemplate.exchange(API_BASE_URL + "/account/" + accountId + "/username", HttpMethod.GET, makeAuthEntity(currentUser), String.class).getBody();
+        } catch (Exception ex){
+            System.out.println("Something isn't right.... maybe the account ID is invalid?");
+        }
+        return username;
     }
 
     private HttpEntity makeAuthEntity(AuthenticatedUser currentUser) {

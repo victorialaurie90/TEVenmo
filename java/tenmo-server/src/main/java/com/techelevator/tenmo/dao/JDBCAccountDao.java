@@ -31,7 +31,6 @@ public class JdbcAccountDao implements AccountDao {
         System.out.println("Account id: " + accountId);
         String sql = "SELECT balance FROM accounts WHERE account_id = ?;";
         BigDecimal balance = jdbcTemplate.queryForObject(sql, BigDecimal.class, accountId);
-        System.out.println("Did this run? Yes?");
         if (balance != null) {
             return balance;
         } else {
@@ -76,7 +75,7 @@ public class JdbcAccountDao implements AccountDao {
 
     @Override
     public int getAccountIdByUserId(int userId) {
-        String sql = "SELECT account_id FROM accounts WHERE user_Id = ?;";
+        String sql = "SELECT account_id FROM accounts WHERE user_id = ?;";
         Integer accountId = jdbcTemplate.queryForObject(sql, Integer.class, userId);
         return accountId;
     }

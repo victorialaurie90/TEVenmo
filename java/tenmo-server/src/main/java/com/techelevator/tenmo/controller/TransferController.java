@@ -34,13 +34,13 @@ public class TransferController {
     }
 
     @RequestMapping(path = "/transfers", method = RequestMethod.POST)
-    public String sendTransfer(@RequestBody Transfer transfer){
+    public void sendTransfer(@RequestBody Transfer transfer){
         int accountFrom = transfer.getAccountFrom();
         int accountTo = transfer.getAccountTo();
         BigDecimal amount = transfer.getAmount();
-        String processedTransfer = transferDao.sendTransfer(accountFrom, accountTo, amount);
-        System.out.println("Transfer successful!");
-        return processedTransfer;
+        transferDao.sendTransfer(accountFrom, accountTo, amount);
+        //System.out.println("Transfer successful!");
+        //return processedTransfer;
     }
 
     @RequestMapping(path = "/transfers", method = RequestMethod.GET)
@@ -49,4 +49,17 @@ public class TransferController {
         List<Transfer> transfersList = transferDao.getAllTransfers(userId);
         return transfersList;
     }
+
+    @RequestMapping(path = "/transfers/status/{id}", method = RequestMethod.GET)
+    public String getStatusDescFromStatusId(@PathVariable int id) {
+        String statusDesc = transferDao.getStatusDescFromStatusId(id);
+        return statusDesc;
+    }
+
+    @RequestMapping(path = "/transfers/type/{id}", method = RequestMethod.GET)
+    public String getTypeDescFromTypeId(@PathVariable int id) {
+        String typeDesc = transferDao.getTypeDescFromTypeId(id);
+        return typeDesc;
+    }
+
 }

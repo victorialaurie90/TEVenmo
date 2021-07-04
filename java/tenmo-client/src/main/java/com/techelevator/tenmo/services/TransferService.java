@@ -2,10 +2,15 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.view.ConsoleService;
 import org.apiguardian.api.API;
 import org.springframework.http.*;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
+import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class TransferService {
@@ -15,10 +20,12 @@ public class TransferService {
     // public static String AUTH_TOKEN = ""; -> Do we need this?
     private AuthenticatedUser currentUser;
     AccountService accountService;
+    ConsoleService console;
 
     public TransferService(String API_BASE_URL, AccountService accountService) {
         this.API_BASE_URL = API_BASE_URL;
         this.accountService = accountService;
+
     }
 
     public void getAllTransfers(AuthenticatedUser currentUser, AccountService accountService) throws NullPointerException {
@@ -44,31 +51,78 @@ public class TransferService {
         }
     }
 
-    public Transfer getTransferById(int transferId) {
-        Transfer transfer = new Transfer();
-        transfer = restTemplate.exchange(API_BASE_URL + "/transfers/" + transferId, HttpMethod.GET, makeAuthEntity(currentUser), Transfer.class).getBody();
+    public Transfer getTransferById(AuthenticatedUser currentUser, AccountService accountService, int transferId) {
+        System.out.println("-----------------------------------------\r\n" +
+                "Enter transfer ID to view transfer details (0 to cancel): ");
+        Scanner scanner = new Scanner(System.in);
+        transferId = Integer.parseInt(scanner.nextLine());
+        Transfer transfer = restTemplate.exchange(API_BASE_URL + "/transfers/" + transferId, HttpMethod.GET, makeAuthEntity(currentUser), Transfer.class).getBody();
+        System.out.println("------------------------------------------\r\n");
+        System.out.println("Transfer Details");
+        System.out.println("------------------------------------------\r\n");
+        System.out.println("Id: " + transfer.getTransferId());
+        System.out.println("From: " + accountService.getUsernameByAccountId(transfer.getAccountFrom(), currentUser));
+        System.out.println("To: " + accountService.getUsernameByAccountId(transfer.getAccountTo(), currentUser));
+        System.out.println("Type: " + getTypeDescFromTypeId(transfer.getTransferTypeId(), currentUser));
+        System.out.println("Status: " + getStatusDescFromStatusId(transfer.getTransferStatusId(), currentUser));
+        System.out.println("Amount: $" + transfer.getAmount());
+
         return transfer;
     }
 
-    public Transfer sendTransfer(Transfer transfer, AuthenticatedUser currentUser) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("-------------------------------------------\r\n" +
-                "Enter ID of user you are sending to (0 to cancel): ");
-        transfer.setAccountTo(Integer.parseInt(scanner.nextLine()));
-        transfer.setAccountFrom(currentUser.getUser().getId());
-        if (transfer.getAccountTo() != 0) {
-            System.out.print("Enter amount: ");
-        } else {
+    public Transfer createTransfer(AuthenticatedUser currentUser, ConsoleService console, AccountService accountService) {
+        int accountFrom  = accountService.getAccountIdByUserId(currentUser.getUser().getId(), currentUser);
+        int selectUserTo = console.getUserInputInteger("\nEnter Id of user you want to send TE bucks to (0 to cancel) ");
+        int accountTo = accountService.getAccountIdByUserId(selectUserTo, currentUser);
+        double doubleAmount = Double.parseDouble(console.getUserInput("Enter amount to send "));
+        BigDecimal amount = BigDecimal.valueOf(doubleAmount);
+        Transfer transfer = new Transfer();
+        transfer.setTransferTypeId(2);
+        transfer.setTransferStatusId(2);
+        transfer.setAmount(amount);
+        transfer.setAccountTo(accountTo);
+        transfer.setAccountFrom(accountFrom);
+        return transfer;
+    }
 
-            try {
-                Transfer currentTransfer = restTemplate.exchange(API_BASE_URL + "/transfers", HttpMethod.POST, makeTransferEntity(transfer, currentUser), Transfer.class).getBody();
+    public void sendTransfer(Transfer transfer, AuthenticatedUser currentUser) {
+        try {
+                //(accountService.getBalance(currentUser).compareTo(createTransfer(currentUser, console, accountService).getAmount()) >= 0) {
+                transfer = restTemplate.exchange(API_BASE_URL + "/transfers", HttpMethod.POST, makeTransferEntity(transfer, currentUser), Transfer.class).getBody();
                 System.out.println("Transfer was successful.");
-                return currentTransfer;
-            } catch (Exception e) {
+                //return transfer;
+               // System.out.println("Insufficient funds.");
+            }catch (NullPointerException npEx) {
+            System.out.println("No transfer found");
+        }catch (RestClientException rcEx){
+            System.out.println("Request invalid");
+        }catch (ResponseStatusException rsEx) {
+            System.out.println("Error contacting server");
+        }catch(Exception e){
                 System.out.println("This happened: " + e.getMessage() + " and " + e.getCause());
             }
+        //return transfer;
+       }
+
+
+    public String getStatusDescFromStatusId(int transferStatusId, AuthenticatedUser currentUser) {
+        String statusDesc = "";
+        try {
+            statusDesc = restTemplate.exchange(API_BASE_URL + "/transfers/status/" + transferStatusId, HttpMethod.GET, makeAuthEntity(currentUser), String.class).getBody();
+        } catch (Exception ex) {
+            System.out.println("Something isn't right.... maybe the status ID is invalid?");
         }
-        return transfer;
+        return statusDesc;
+    }
+
+    public String getTypeDescFromTypeId(int transferTypeId, AuthenticatedUser currentUser) {
+        String typeDesc = "";
+        try {
+            typeDesc = restTemplate.exchange(API_BASE_URL + "/transfers/type/" + transferTypeId, HttpMethod.GET, makeAuthEntity(currentUser), String.class).getBody();
+        } catch (Exception ex) {
+            System.out.println("Something isn't right.... maybe the type ID is invalid?");
+        }
+        return typeDesc;
     }
 
     private HttpEntity makeAuthEntity(AuthenticatedUser currentUser) {

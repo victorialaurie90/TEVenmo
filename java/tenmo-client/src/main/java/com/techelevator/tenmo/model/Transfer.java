@@ -9,8 +9,8 @@ public class Transfer {
     private int transferStatusId;
     private int accountFrom;
     private int accountTo;
-    private String accountFromName;
-    private String accountToName;
+    //private String accountFromName;
+    //private String accountToName;
     private BigDecimal amount;
 
 /* Don't think we need this constructor?!
@@ -31,7 +31,9 @@ public class Transfer {
 
     public void setTransferId(int transferId) {
         this.transferId = transferId;
+        //return transferId;
     }
+
 
     public int getTransferTypeId() {
         return transferTypeId;
@@ -73,7 +75,7 @@ public class Transfer {
         this.amount = amount;
     }
 
-    public String getAccountFromName() {
+   /* public String getAccountFromName() {
         return accountFromName;
     }
 
@@ -87,5 +89,5 @@ public class Transfer {
 
     public void setAccountToName(String accountToName) {
         this.accountToName = accountToName;
-    }
+    }*/
 }

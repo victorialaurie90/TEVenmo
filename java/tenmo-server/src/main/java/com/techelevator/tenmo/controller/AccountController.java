@@ -4,10 +4,7 @@ import com.techelevator.tenmo.dao.AccountDao;
 import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.model.User;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -41,5 +38,11 @@ public class AccountController {
     public int getAccountIdByUserId(@PathVariable int id) {
         int accountId = accountDao.getAccountIdByUserId(id);
         return accountId;
+    }
+
+    @RequestMapping(path = "/account/{id}/username", method = RequestMethod.GET)
+    public String getUsernameByAccountId(@PathVariable int id) {
+        String username = accountDao.getUsernameByAccountId(id);
+        return username;
     }
 }
