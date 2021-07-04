@@ -40,13 +40,6 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    public int getAccountIdByUserId(int userId) {
-        String sql = "SELECT account_id FROM accounts WHERE user_Id = ?;";
-        Integer accountId = jdbcTemplate.queryForObject(sql, Integer.class, userId);
-        return accountId;
-    }
-
-    @Override
     // TODO: Remove logged-in user from list
     public List<Account> listAllUsers() {
         List<Account> account = new ArrayList<>();
@@ -58,7 +51,7 @@ public class JdbcAccountDao implements AccountDao {
         return account;
     }
 
-    // TODO: Insufficient funds exception, might need try/catch, make sure to test
+    // TODO: Insufficient funds exception, might need try/catch
     @Override
     public String subtractFromBalance(BigDecimal amount, int accountId) {
         String sql = "UPDATE accounts SET balance = balance - ?  WHERE account_id = ?;";
@@ -69,7 +62,6 @@ public class JdbcAccountDao implements AccountDao {
             return "Can not connect to database";
         }
     }
-
 
     @Override
     public String addToBalance(BigDecimal amount, int accountId) {
@@ -83,7 +75,14 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    public String findUsernameByAccountId(int accountId) {
+    public int getAccountIdByUserId(int userId) {
+        String sql = "SELECT account_id FROM accounts WHERE user_Id = ?;";
+        Integer accountId = jdbcTemplate.queryForObject(sql, Integer.class, userId);
+        return accountId;
+    }
+
+    @Override
+    public String getUsernameByAccountId(int accountId) {
         String username = "";
         String sql = "SELECT username FROM users " +
                 "INNER JOIN accounts ON users.user_id = accounts.user_id " +

@@ -29,16 +29,20 @@ public class App {
     private AuthenticatedUser currentUser;
     private ConsoleService console;
     private AuthenticationService authenticationService;
-    private Transfer transfer;
+    private TransferService transferService;
+    private static AccountService accountService;
 
     public static void main(String[] args) {
-        App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
+        App app = new App(new ConsoleService(System.in, System.out),
+                            new AuthenticationService(API_BASE_URL), new TransferService(API_BASE_URL, accountService), new AccountService(API_BASE_URL));
         app.run();
     }
 
-    public App(ConsoleService console, AuthenticationService authenticationService) {
+    public App(ConsoleService console, AuthenticationService authenticationService, TransferService transferService, AccountService accountService) {
         this.console = console;
         this.authenticationService = authenticationService;
+        this.transferService = transferService;
+        this.accountService = accountService;
     }
 
     public void run() {
@@ -73,15 +77,11 @@ public class App {
     }
 
     private void viewCurrentBalance() {
-        AccountService accountService = new AccountService(API_BASE_URL, currentUser);
         accountService.getBalance(currentUser);
     }
 
     private void viewTransferHistory() {
-        TransferService transferService = new TransferService(API_BASE_URL, currentUser);
-        transferService.getAllTransfers(currentUser);
-        // TODO Auto-generated method stub
-
+        transferService.getAllTransfers(currentUser, accountService);
     }
 
     private void viewPendingRequests() {
@@ -89,11 +89,10 @@ public class App {
     }
 
     private void sendBucks() {
-        AccountService accountService = new AccountService(API_BASE_URL, currentUser);
+        AccountService accountService = new AccountService(API_BASE_URL);
         accountService.listAllUsers(currentUser);
-        TransferService transferService = new TransferService(API_BASE_URL, currentUser);
-        transferService.sendTransfer(transfer, currentUser);
-
+        /*TransferService transferService = new TransferService(API_BASE_URL);
+        transferService.sendTransfer(currentUser);*/
     }
 
     private void requestBucks() {

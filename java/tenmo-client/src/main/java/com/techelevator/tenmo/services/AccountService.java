@@ -2,36 +2,27 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.User;
+import org.apiguardian.api.API;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class AccountService {
 
     private String API_BASE_URL;
     private RestTemplate restTemplate = new RestTemplate();
-    public static String AUTH_TOKEN = "";
+    // public static String AUTH_TOKEN = ""; -> Do we need this?
     private AuthenticatedUser currentUser;
 
-    public AccountService(String url, AuthenticatedUser currentUser) {
-        API_BASE_URL = "http://localhost:8080";
-        this.currentUser = currentUser;
+    public AccountService(String API_BASE_URL) {
+        this.API_BASE_URL = API_BASE_URL;
     }
 
     //TODO: RestClientResponse Exceptions on all -> wrap in try/catch
-
-    public int getAccountByUserId(int userId, AuthenticatedUser currentUser){
-        Integer accountId = 0;
-        try {
-            accountId = restTemplate.exchange(API_BASE_URL + "/account" + userId, HttpMethod.GET, makeAuthEntity(currentUser), Integer.class).getBody();
-        } catch (Exception ex){
-            System.out.println("Something isn't right.... maybe your user ID is invalid?");
-        }
-        return accountId;
-    }
 
     public BigDecimal getBalance(AuthenticatedUser currentUser) {
         BigDecimal balance;
@@ -57,7 +48,15 @@ public class AccountService {
         return users;
     }
 
-    //public Integer getAccountByUserId(int userId){}
+    public int getAccountIdByUserId(int userId, AuthenticatedUser currentUser){
+        int accountId = 0;
+        try {
+            accountId = restTemplate.exchange(API_BASE_URL + "/account/" + userId, HttpMethod.GET, makeAuthEntity(currentUser), Integer.class).getBody();
+        } catch (Exception ex){
+            System.out.println("Something isn't right.... maybe your user ID is invalid?");
+        }
+        return accountId;
+    }
 
     private HttpEntity makeAuthEntity(AuthenticatedUser currentUser) {
         HttpHeaders headers = new HttpHeaders();

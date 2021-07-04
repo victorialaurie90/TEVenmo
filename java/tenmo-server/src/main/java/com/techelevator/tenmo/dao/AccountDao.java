@@ -18,7 +18,7 @@ public interface AccountDao {
 
     String addToBalance(BigDecimal amount, int userId);
 
-    String findUsernameByAccountId(int accountId);
+    String getUsernameByAccountId(int accountId);
 
     BigDecimal getBalanceByAccountId(int accountId);
 
