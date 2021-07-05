@@ -3,14 +3,12 @@ package com.techelevator.tenmo.services;
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.view.ConsoleService;
-import org.apiguardian.api.API;
 import org.springframework.http.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class TransferService {
@@ -22,19 +20,21 @@ public class TransferService {
     AccountService accountService;
     ConsoleService console;
 
+    BigDecimal zero = new BigDecimal(0.00);
+
     public TransferService(String API_BASE_URL, AccountService accountService) {
         this.API_BASE_URL = API_BASE_URL;
         this.accountService = accountService;
 
     }
 
-    public void getAllTransfers(AuthenticatedUser currentUser, AccountService accountService) throws NullPointerException {
+    public Transfer[] getAllTransfers(AuthenticatedUser currentUser, AccountService accountService) {
         Transfer[] transfers;
 
         int accountId = accountService.getAccountIdByUserId(currentUser.getUser().getId(), currentUser);
         System.out.println("-------------------------------------------");
         System.out.println("Transfers");
-        System.out.println("ID             From/To             Amount");
+        System.out.println("ID             To/From             Amount");
         System.out.println("-------------------------------------------");
 
         try {
@@ -43,67 +43,115 @@ public class TransferService {
                 if (i.getAccountFrom() == accountId) {
                     System.out.println(i.getTransferId() + "          To: " + i.getAccountTo() + "            $ " + i.getAmount());
                 } else if (i.getAccountTo() == accountId) {
-                    System.out.println(i.getTransferId() + "          From: " + i.getAccountFrom() + "        $ " + i.getAmount());
+                    System.out.println(i.getTransferId() + "          From: " + i.getAccountFrom() + "          $ " + i.getAmount());
                 }
             }
-        }catch (Exception e) {
+            return transfers;
+        } catch (NullPointerException npEx) {
+            System.out.println("No transfer found.");
+        } catch (Exception e) {
             System.out.println("Something went wrong.");
-        }
+    }
+        return null;
     }
 
     public Transfer getTransferById(AuthenticatedUser currentUser, AccountService accountService, int transferId) {
-        System.out.println("-----------------------------------------\r\n" +
-                "Enter transfer ID to view transfer details (0 to cancel): ");
-        Scanner scanner = new Scanner(System.in);
-        transferId = Integer.parseInt(scanner.nextLine());
-        Transfer transfer = restTemplate.exchange(API_BASE_URL + "/transfers/" + transferId, HttpMethod.GET, makeAuthEntity(currentUser), Transfer.class).getBody();
-        System.out.println("------------------------------------------\r\n");
-        System.out.println("Transfer Details");
-        System.out.println("------------------------------------------\r\n");
-        System.out.println("Id: " + transfer.getTransferId());
-        System.out.println("From: " + accountService.getUsernameByAccountId(transfer.getAccountFrom(), currentUser));
-        System.out.println("To: " + accountService.getUsernameByAccountId(transfer.getAccountTo(), currentUser));
-        System.out.println("Type: " + getTypeDescFromTypeId(transfer.getTransferTypeId(), currentUser));
-        System.out.println("Status: " + getStatusDescFromStatusId(transfer.getTransferStatusId(), currentUser));
-        System.out.println("Amount: $" + transfer.getAmount());
-
-        return transfer;
+        try {
+            System.out.println("\n" +
+                    "Enter transfer ID to view transfer details (0 to cancel): ");
+            Scanner scanner = new Scanner(System.in);
+            transferId = Integer.parseInt(scanner.nextLine());
+            if (transferId != 0) {
+                boolean doesTransferExist = false;
+                Transfer transfer = restTemplate.exchange(API_BASE_URL + "/transfers/" + transferId, HttpMethod.GET, makeAuthEntity(currentUser), Transfer.class).getBody();
+                if (transfer.getAmount() == null) {
+                    System.out.println("Please enter a valid transfer ID.");
+                    return null;
+                } else {
+                    System.out.println("------------------------------------------");
+                    System.out.println("Transfer Details");
+                    System.out.println("------------------------------------------");
+                    System.out.println("ID: " + transfer.getTransferId());
+                    System.out.println("From: " + accountService.getUsernameByAccountId(transfer.getAccountFrom(), currentUser));
+                    System.out.println("To: " + accountService.getUsernameByAccountId(transfer.getAccountTo(), currentUser));
+                    System.out.println("Type: " + getTypeDescFromTypeId(transfer.getTransferTypeId(), currentUser));
+                    System.out.println("Status: " + getStatusDescFromStatusId(transfer.getTransferStatusId(), currentUser));
+                    System.out.println("Amount: $" + transfer.getAmount());
+                    return transfer;
+                }
+            }
+        } catch (NumberFormatException numEx) {
+            System.out.println("Transfer ID must be formatted as a number.");
+        } catch (NullPointerException numEx) {
+            System.out.println("Troll in the code.");
+        }
+        return null;
     }
 
     public Transfer createTransfer(AuthenticatedUser currentUser, ConsoleService console, AccountService accountService) {
-        int accountFrom  = accountService.getAccountIdByUserId(currentUser.getUser().getId(), currentUser);
-        int selectUserTo = console.getUserInputInteger("\nEnter Id of user you want to send TE bucks to (0 to cancel) ");
-        int accountTo = accountService.getAccountIdByUserId(selectUserTo, currentUser);
-        double doubleAmount = Double.parseDouble(console.getUserInput("Enter amount to send "));
-        BigDecimal amount = BigDecimal.valueOf(doubleAmount);
-        Transfer transfer = new Transfer();
-        transfer.setTransferTypeId(2);
-        transfer.setTransferStatusId(2);
-        transfer.setAmount(amount);
-        transfer.setAccountTo(accountTo);
-        transfer.setAccountFrom(accountFrom);
-        return transfer;
+        try {
+            int accountFrom = accountService.getAccountIdByUserId(currentUser.getUser().getId(), currentUser);
+            int selectUserTo = console.getUserInputInteger("\nEnter ID of user you want to send TE bucks to (0 to cancel) ");
+            String doesUserExist = Integer.toString(selectUserTo);
+            if (selectUserTo != 0) {
+                int accountTo = accountService.getAccountIdByUserId(selectUserTo, currentUser);
+
+                if (accountFrom == accountTo) {
+                    System.out.println("You cannot send money to yourself. Please select another user.");
+                }
+
+                if (accountTo == 0) {
+                    return null;
+                }
+
+                else {
+                    double doubleAmount = Double.parseDouble(console.getUserInput("Enter amount to send "));
+                    BigDecimal amount = BigDecimal.valueOf(doubleAmount);
+                    Transfer transfer = new Transfer();
+                    transfer.setTransferTypeId(2);
+                    transfer.setTransferStatusId(2);
+                    transfer.setAmount(amount);
+                    transfer.setAccountTo(accountTo);
+                    transfer.setAccountFrom(accountFrom);
+                    return transfer;
+                }
+            }
+        }
+        catch (NumberFormatException numEx) {
+            System.out.println("Please enter valid monetary value as a number.");
+        }
+        catch (NullPointerException npEx) {
+            System.out.println("Troll in the code.");
+        }
+        return null;
     }
 
-    public void sendTransfer(Transfer transfer, AuthenticatedUser currentUser) {
-        try {
-                //(accountService.getBalance(currentUser).compareTo(createTransfer(currentUser, console, accountService).getAmount()) >= 0) {
+    public void sendTransfer(Transfer transfer, AuthenticatedUser currentUser, AccountService accountService) {
+       try {
+        if (accountService.getBalance(currentUser).compareTo(transfer.getAmount()) == -1) {
+            System.out.println("Your current balance is " + accountService.getBalance(currentUser) + ".");
+            System.out.println("Insufficient funds. Take yo broke ass home!");
+
+        }
+        if (transfer.getAmount().compareTo(zero) == 0) {
+            System.out.println("Transfer amount should be at least $0.01. Please enter a valid transfer amount.");
+        }
+
+        else {
                 transfer = restTemplate.exchange(API_BASE_URL + "/transfers", HttpMethod.POST, makeTransferEntity(transfer, currentUser), Transfer.class).getBody();
                 System.out.println("Transfer was successful.");
-                //return transfer;
-               // System.out.println("Insufficient funds.");
-            }catch (NullPointerException npEx) {
-            System.out.println("No transfer found");
-        }catch (RestClientException rcEx){
-            System.out.println("Request invalid");
-        }catch (ResponseStatusException rsEx) {
-            System.out.println("Error contacting server");
-        }catch(Exception e){
-                System.out.println("This happened: " + e.getMessage() + " and " + e.getCause());
+                System.out.println("Your new balance is " + accountService.getBalance(currentUser) + ".");
             }
-        //return transfer;
+        } catch (NullPointerException npEx) {
+           System.out.println("Transfer request cancelled.");
+       } catch (RestClientException rcEx) {
+           System.out.println("Request invalid.");
+       } catch (ResponseStatusException rsEx) {
+           System.out.println("Error contacting server.");
+       } catch (Exception e) {
+           System.out.println("This happened: " + e.getMessage() + " and " + e.getCause());
        }
-
+    }
 
     public String getStatusDescFromStatusId(int transferStatusId, AuthenticatedUser currentUser) {
         String statusDesc = "";

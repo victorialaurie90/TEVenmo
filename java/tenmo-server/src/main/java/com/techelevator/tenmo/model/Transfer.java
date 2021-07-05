@@ -1,52 +1,28 @@
 package com.techelevator.tenmo.model;
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Min;
+
 import java.math.BigDecimal;
 
 public class Transfer {
 
+    @Min(value = 0)
     private int transferId;
+
+    @Min(value = 0)
     private int transferTypeId;
+
+    @Min(value = 0)
     private int transferStatusId;
+
+    @Min(value = 0)
     private int accountFrom;
+
+    @Min(value = 0)
     private int accountTo;
+
+    @DecimalMin(value = "0.00")
     private BigDecimal amount;
-
-    /*private String accountFromName;
-    private String accountToName;*/
-
-/*    public Transfer() {
-    }
-
-    public Transfer(int transferId, int transferTypeId, int transferStatusId, int accountFrom, int accountTo, BigDecimal amount){
-        this.transferId = transferId;
-        this.transferTypeId = transferTypeId;
-        this.transferStatusId = transferStatusId;
-        this.accountFrom = accountFrom;
-        this.accountTo = accountTo;
-        this.amount = amount;
-    }
-
-    public Transfer(int transferTypeId, int transferStatusId, int accountFrom, int accountTo, BigDecimal amount) {
-        this.transferTypeId = transferTypeId;
-        this.transferStatusId = transferStatusId;
-        this.accountFrom = accountFrom;
-        this.accountTo = accountTo;
-        this.amount = amount;
-    }
-
-*//*
-    public Transfer(int transferId, int transferTypeId, int transferStatusId, int accountFrom, int accountTo, BigDecimal amount, String accountFromName, String accountToName){
-        this.transferId = transferId;
-        this.transferTypeId = transferTypeId;
-        this.transferStatusId = transferStatusId;
-        this.accountFrom = accountFrom;
-        this.accountTo = accountTo;
-        this.amount = amount;
-        this.accountFromName = accountFromName;
-        this.accountToName = accountToName;
-    }
-*/
 
     public int getTransferId() {
         return transferId;
@@ -95,12 +71,4 @@ public class Transfer {
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
-
-/*    public String getAccountFromName() {return accountFromName;}
-
-    public void setAccountFromName(String accountFromName) {this.accountFromName = accountFromName;}
-
-    public String getAccountToName() {return accountToName;}
-
-    public void setAccountToName(String accountToName) {this.accountToName = accountToName;}*/
 }

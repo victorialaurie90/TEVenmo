@@ -26,9 +26,9 @@ public class JdbcTransferDao implements TransferDao {
 @Override
    public Transfer sendTransfer(int accountFrom, int accountTo, BigDecimal amount) {
     if (accountTo == accountFrom) {
-        System.out.println("You can't send money to yourself!!!");
+        System.out.println("You can't send money to yourself!");
     }
-    if (amount.compareTo(accountDao.getBalanceByAccountId(accountFrom)) == -1) {
+    if (amount.compareTo(accountDao.getBalanceByAccountId(accountFrom)) <= 0) {
         String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount)" +
                 " Values(2, 2, ?, ?, ?);";
         jdbcTemplate.update(sql, accountFrom, accountTo, amount);

@@ -21,10 +21,10 @@ public class App {
     private static final String MAIN_MENU_OPTION_VIEW_BALANCE = "View your current balance";
     private static final String MAIN_MENU_OPTION_SEND_BUCKS = "Send TE bucks";
     private static final String MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS = "View your past transfers";
-    private static final String MAIN_MENU_OPTION_REQUEST_BUCKS = "Request TE bucks";
-    private static final String MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS = "View your pending requests";
+    // private static final String MAIN_MENU_OPTION_REQUEST_BUCKS = "Request TE bucks";
+    // private static final String MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS = "View your pending requests";
     private static final String MAIN_MENU_OPTION_LOGIN = "Login as different user";
-    private static final String[] MAIN_MENU_OPTIONS = {MAIN_MENU_OPTION_VIEW_BALANCE, MAIN_MENU_OPTION_SEND_BUCKS, MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS, MAIN_MENU_OPTION_REQUEST_BUCKS, MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS, MAIN_MENU_OPTION_LOGIN, MENU_OPTION_EXIT};
+    private static final String[] MAIN_MENU_OPTIONS = {MAIN_MENU_OPTION_VIEW_BALANCE, MAIN_MENU_OPTION_SEND_BUCKS, MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS, /*MAIN_MENU_OPTION_REQUEST_BUCKS, MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS,*/ MAIN_MENU_OPTION_LOGIN, MENU_OPTION_EXIT};
 
     private AuthenticatedUser currentUser;
     private ConsoleService console;
@@ -63,23 +63,26 @@ public class App {
                 viewCurrentBalance();
             } else if (MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS.equals(choice)) {
                 viewTransferHistory();
-            } else if (MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS.equals(choice)) {
-                viewPendingRequests();
             } else if (MAIN_MENU_OPTION_SEND_BUCKS.equals(choice)) {
                 sendBucks();
-            } else if (MAIN_MENU_OPTION_REQUEST_BUCKS.equals(choice)) {
-                requestBucks();
             } else if (MAIN_MENU_OPTION_LOGIN.equals(choice)) {
                 login();
             } else {
                 // the only other option on the main menu is to exit
                 exitProgram();
             }
+
+           /* These optional functions are not in use
+           else if (MAIN_MENU_OPTION_REQUEST_BUCKS.equals(choice)) {
+                requestBucks();
+            } else if (MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS.equals(choice)) {
+                viewPendingRequests();
+            } */
         }
     }
 
     private void viewCurrentBalance() {
-        accountService.getBalance(currentUser);
+        System.out.println("Your current balance is " + accountService.getBalance(currentUser) + ".");
     }
 
     private void viewTransferHistory() {
@@ -88,25 +91,18 @@ public class App {
         transferService.getTransferById(currentUser, accountService, transferId);
     }
 
-    private void viewPendingRequests() {
-        // Optional
-    }
-
     private void sendBucks() {
-        //AccountService accountService = new AccountService(API_BASE_URL);
         accountService.listAllUsers(currentUser);
-        //transferService.createTransfer(currentUser, console, accountService);
-        //TransferService transferService = new TransferService(API_BASE_URL, accountService);
-        transferService.sendTransfer(transferService.createTransfer(currentUser, console, accountService), currentUser);
-    }
-
-    private void requestBucks() {
-        // Optional
+        transferService.sendTransfer(transferService.createTransfer(currentUser, console, accountService), currentUser, accountService);
     }
 
     private void exitProgram() {
         System.exit(0);
     }
+
+    /* These optional methods are not in use
+    private void viewPendingRequests() {}
+    private void requestBucks() {} */
 
     private void registerAndLogin() {
         while (!isAuthenticated()) {
