@@ -9,21 +9,8 @@ public class Transfer {
     private int transferStatusId;
     private int accountFrom;
     private int accountTo;
-    //private String accountFromName;
-    //private String accountToName;
-    private BigDecimal amount;
 
-/* Don't think we need this constructor?!
-    public Transfer(int transferId, int transferTypeId, int transferStatusId, int accountFrom, int accountTo, String accountFromName, String accountToName, BigDecimal amount) {
-        this.transferId = transferId;
-        this.transferTypeId = transferTypeId;
-        this.transferStatusId = transferStatusId;
-        this.accountFrom = accountFrom;
-        this.accountTo = accountTo;
-        this.accountFromName = accountFromName;
-        this.accountToName = accountToName;
-        this.amount = amount;
-    }*/
+    private BigDecimal amount;
 
     public int getTransferId() {
         return transferId;
@@ -31,9 +18,7 @@ public class Transfer {
 
     public void setTransferId(int transferId) {
         this.transferId = transferId;
-        //return transferId;
     }
-
 
     public int getTransferTypeId() {
         return transferTypeId;
@@ -75,19 +60,4 @@ public class Transfer {
         this.amount = amount;
     }
 
-   /* public String getAccountFromName() {
-        return accountFromName;
-    }
-
-    public void setAccountFromName(String accountFromName) {
-        this.accountFromName = accountFromName;
-    }
-
-    public String getAccountToName() {
-        return accountToName;
-    }
-
-    public void setAccountToName(String accountToName) {
-        this.accountToName = accountToName;
-    }*/
 }

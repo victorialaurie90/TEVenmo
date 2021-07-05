@@ -39,7 +39,7 @@ public class JdbcAccountDao implements AccountDao {
     }
 
     @Override
-    // TODO: Remove logged-in user from list
+
     public List<Account> listAllUsers() {
         List<Account> account = new ArrayList<>();
         String sql = "SELECT user_id, username FROM users;";
@@ -50,26 +50,21 @@ public class JdbcAccountDao implements AccountDao {
         return account;
     }
 
-    // TODO: Insufficient funds exception, might need try/catch
     @Override
-    public String subtractFromBalance(BigDecimal amount, int accountId) {
+    public void subtractFromBalance(BigDecimal amount, int accountId) {
         String sql = "UPDATE accounts SET balance = balance - ?  WHERE account_id = ?;";
         try {
             jdbcTemplate.update(sql, amount, accountId);
-            return "Balance successfully updated.";
         } catch (ResourceAccessException re) {
-            return "Can not connect to database";
         }
     }
 
     @Override
-    public String addToBalance(BigDecimal amount, int accountId) {
+    public void addToBalance(BigDecimal amount, int accountId) {
         String sql = "UPDATE accounts SET balance = balance + ?  WHERE account_id = ?;";
         try {
             jdbcTemplate.update(sql, amount, accountId);
-            return "Balance successfully updated.";
         } catch (ResourceAccessException re) {
-            return "Cannot connect to database.";
         }
     }
 

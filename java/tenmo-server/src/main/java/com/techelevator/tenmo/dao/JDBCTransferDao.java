@@ -37,10 +37,6 @@ public class JdbcTransferDao implements TransferDao {
     }
     return null;
 }
-           //System.out.println("Transfer failed due to insufficient funds");
-
-
-       //return "Insufficient funds, transfer failed.";
 
 
     @Override
@@ -118,8 +114,6 @@ public class JdbcTransferDao implements TransferDao {
         transfer.setTransferStatusId(rowSet.getInt("transfer_status_id"));
         transfer.setAccountFrom(rowSet.getInt("account_from"));
         transfer.setAccountTo(rowSet.getInt("account_to"));
-        /*transfer.setAccountFromName(accountDao.findUsernameByAccountId(rowSet.getInt("account_from")));
-        transfer.setAccountToName(accountDao.findUsernameByAccountId(rowSet.getInt("account_to")));*/
         transfer.setAmount(rowSet.getBigDecimal("amount"));
         return transfer;
     }

@@ -14,9 +14,9 @@ public interface AccountDao {
 
     List<Account> listAllUsers();
 
-    String subtractFromBalance(BigDecimal amount, int userId);
+    void subtractFromBalance(BigDecimal amount, int userId);
 
-    String addToBalance(BigDecimal amount, int userId);
+    void addToBalance(BigDecimal amount, int userId);
 
     String getUsernameByAccountId(int accountId);
 
